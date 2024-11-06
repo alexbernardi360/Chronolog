@@ -7,7 +7,6 @@ import {
   Session,
   User,
 } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
 import { Profile } from '../domain/profile.interface';
 
 @Injectable({
@@ -15,8 +14,8 @@ import { Profile } from '../domain/profile.interface';
 })
 export class AuthService {
   private supabase = createClient(
-    environment.supabaseUrl,
-    environment.supabaseKey
+    import.meta.env.NG_APP_SUPABASE_URL,
+    import.meta.env.NG_APP_SUPABASE_KEY
   );
   private _session: AuthSession | null = null;
 
