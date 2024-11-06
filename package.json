@@ -39,5 +39,8 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "tailwindcss": "^3.4.14",
     "typescript": "~5.5.2"
+  },
+  "resolutions": {
+    "@supabase/auth-js": "2.61.0"
   }
 }

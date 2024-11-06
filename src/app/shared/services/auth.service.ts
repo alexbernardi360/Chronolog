@@ -1,13 +1,6 @@
 // src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
-import {
-  AuthChangeEvent,
-  AuthSession,
-  createClient,
-  Session,
-  User,
-} from '@supabase/supabase-js';
-import { Profile } from '../domain/profile.interface';
+import { createClient } from '@supabase/supabase-js';
 
 @Injectable({
   providedIn: 'root',
@@ -17,28 +10,6 @@ export class AuthService {
     import.meta.env.NG_APP_SUPABASE_URL,
     import.meta.env.NG_APP_SUPABASE_KEY
   );
-  private _session: AuthSession | null = null;
-
-  get session() {
-    this.supabase.auth.getSession().then(({ data }) => {
-      this._session = data.session;
-    });
-    return this._session;
-  }
-
-  profile(user: User) {
-    return this.supabase
-      .from('profiles')
-      .select(`username, website, avatar_url`)
-      .eq('id', user.id)
-      .single();
-  }
-
-  authChanges(
-    callback: (event: AuthChangeEvent, session: Session | null) => void
-  ) {
-    return this.supabase.auth.onAuthStateChange(callback);
-  }
 
   signIn(email: string, password: string) {
     return this.supabase.auth.signInWithPassword({ email, password });
@@ -48,20 +19,11 @@ export class AuthService {
     return this.supabase.auth.signOut();
   }
 
-  updateProfile(profile: Profile) {
-    const update = {
-      ...profile,
-      updated_at: new Date(),
-    };
+  async isAuthenticated() {
+    const {
+      data: { session },
+    } = await this.supabase.auth.getSession();
 
-    return this.supabase.from('profiles').upsert(update);
-  }
-
-  downLoadImage(path: string) {
-    return this.supabase.storage.from('avatars').download(path);
-  }
-
-  uploadAvatar(filePath: string, file: File) {
-    return this.supabase.storage.from('avatars').upload(filePath, file);
+    return session != null;
   }
 }

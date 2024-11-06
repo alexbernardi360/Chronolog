@@ -13,6 +13,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -24,6 +25,7 @@ import { AuthService } from '../../../shared/services/auth.service';
 })
 export class LoginComponent {
   private auth = inject(AuthService);
+  private router = inject(Router);
 
   submitting = signal(false);
   errorMessage = signal<string | null>(null);
@@ -54,7 +56,7 @@ export class LoginComponent {
 
       if (error) throw error;
 
-      alert('Check your email for the login link!');
+      this.router.navigate(['home'])
     } catch (error) {
       if (error instanceof Error) {
         this.errorMessage.set(error.message);

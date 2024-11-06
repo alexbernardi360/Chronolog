@@ -4,6 +4,7 @@
         "daisyui",
         "ngsw",
         "SUPABASE",
-        "tailwindcss"
+        "tailwindcss",
+        "unauth"
     ]
 }
