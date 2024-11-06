@@ -5,6 +5,7 @@
     "editorconfig.editorconfig",
     "streetsidesoftware.code-spell-checker",
     "streetsidesoftware.code-spell-checker-italian",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "christian-kohler.path-intellisense"
   ]
 }
