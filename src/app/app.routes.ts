@@ -23,8 +23,20 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'error',
+    children: [
+      {
+        path: '404',
+        loadComponent: () =>
+          import('./routes/errors/not-found.component').then(
+            (c) => c.NotFoundComponent
+          ),
+      },
+    ],
+  },
+  {
     path: '**',
-    redirectTo: 'home',
+    redirectTo: 'error/404',
     pathMatch: 'full',
   },
 ];
