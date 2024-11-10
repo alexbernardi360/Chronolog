@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { AuthService } from '../../shared/services/auth.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
-  selector: 'app-home',
   standalone: true,
   imports: [CommonModule],
   template: `
-  <div class="flex items-center justify-center min-h-screen">
-    <button class="btn btn-error" (click)="signOut()">Logout</button>
-  </div>
+    <div class="flex flex-col gap-y-5 items-center justify-center min-h-screen">
+      <button class="btn btn-error" (click)="signOut()">Logout</button>
+    </div>
   `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
