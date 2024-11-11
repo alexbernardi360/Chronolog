@@ -2,11 +2,17 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ThemeSelectorComponent } from './theme-selector.component';
 import { UserDropdownComponent } from './user-dropdown.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'core-navbar',
   standalone: true,
-  imports: [CommonModule, ThemeSelectorComponent, UserDropdownComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    ThemeSelectorComponent,
+    UserDropdownComponent,
+  ],
   template: `
     <div class="navbar bg-base-100">
       <div class="flex-1">
