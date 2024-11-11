@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,13 +5,13 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { AuthService } from '../../shared/services/auth.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'core-user-dropdown',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="dropdown dropdown-end">
       <div
@@ -35,8 +34,9 @@ import { Router } from '@angular/router';
           <a
             class="text-error hover:bg-error hover:text-error-content"
             (click)="signOut()"
-            >Logout</a
           >
+            Logout
+          </a>
         </li>
       </ul>
     </div>

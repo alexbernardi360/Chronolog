@@ -1,11 +1,8 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../shared/services/auth.service';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="flex flex-col gap-y-5 items-center justify-center h-full">
       Home Page

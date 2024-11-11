@@ -1,12 +1,11 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { NavbarComponent } from './navbar.component';
 import { RouterOutlet } from '@angular/router';
+import { NavbarComponent } from './navbar.component';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, RouterOutlet],
+  imports: [NavbarComponent, RouterOutlet],
   template: `
     <div class="flex flex-col h-screen">
       <div class="flex-none">

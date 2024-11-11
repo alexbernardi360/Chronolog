@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -12,12 +11,12 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../../../shared/services/auth.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './login.component.html',
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,7 +54,7 @@ export class LoginComponent {
 
       if (error) throw error;
 
-      this.router.navigate(['home'])
+      this.router.navigate(['home']);
     } catch (error) {
       if (error instanceof Error) {
         this.errorMessage.set(error.message);

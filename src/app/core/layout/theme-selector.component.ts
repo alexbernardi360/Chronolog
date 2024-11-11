@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,13 +5,13 @@ import {
   OnInit,
 } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
-import { getTheme } from '../../shared/domain/common.utils';
 import { themeChange } from 'theme-change';
+import { getTheme } from '../../shared/domain/common.utils';
 
 @Component({
   selector: 'core-theme-selector',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <label class="swap swap-rotate">
       <!-- this hidden checkbox controls the state -->

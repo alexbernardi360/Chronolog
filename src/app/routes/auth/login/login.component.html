@@ -7,7 +7,8 @@
         [formGroup]="loginForm"
         (ngSubmit)="onSubmit()"
       >
-        <div *ngIf="errorMessageVisible()" class="alert alert-error">
+        @if (errorMessageVisible()) {
+        <div class="alert alert-error">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6 shrink-0 stroke-current"
@@ -43,6 +44,7 @@
             </svg>
           </button>
         </div>
+        }
 
         <div class="form-control">
           <label class="label">
@@ -74,23 +76,15 @@
               formControlName="email"
             />
           </label>
-          <label
-            *ngIf="email?.invalid && (email?.dirty || email?.touched)"
-            class="label pb-0"
-          >
-            <span
-              class="label-text-alt text-error"
-              *ngIf="email?.hasError('required')"
-            >
-              Email is required.
-            </span>
-            <span
-              class="label-text-alt text-error"
-              *ngIf="email?.hasError('email')"
-            >
-              Must be a valid email.
+
+          @if (email.invalid && (email.dirty || email.touched)) {
+          <label class="label pb-0">
+            <span class="label-text-alt text-error">
+              @if (email.hasError('required')) { Email is required. }
+              @else if (email.hasError('email')) { Must be a valid email. }
             </span>
           </label>
+          }
         </div>
 
         <div class="form-control">
@@ -129,17 +123,16 @@
               formControlName="password"
             />
           </label>
-          <label
-            *ngIf="password?.invalid && (password?.dirty || password?.touched)"
-            class="label pb-0"
-          >
-            <span
-              class="label-text-alt text-error"
-              *ngIf="password?.hasError('required')"
-            >
+
+          @if (password.invalid && (password.dirty || password.touched)) {
+          <label class="label pb-0">
+            @if (password.hasError('required')) {
+            <span class="label-text-alt text-error">
               Password is required.
             </span>
+            }
           </label>
+          }
         </div>
 
         <div class="form-control mt-2">
@@ -148,8 +141,9 @@
             class="btn btn-primary"
             [disabled]="!loginForm.valid"
           >
-            <span *ngIf="submitting()" class="loading loading-spinner"></span>
-            Login
+            @if (submitting()){
+            <span class="loading loading-spinner"></span>
+            } Login
           </button>
         </div>
       </form>

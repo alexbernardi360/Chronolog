@@ -1,9 +1,8 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="hero h-full">
       <div class="hero-content text-center">
