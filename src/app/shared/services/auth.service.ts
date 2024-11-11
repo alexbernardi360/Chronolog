@@ -19,10 +19,14 @@ export class AuthService {
     return this.supabase.auth.signOut();
   }
 
+  async getSession() {
+    return await this.supabase.auth.getSession();
+  }
+
   async isAuthenticated() {
     const {
       data: { session },
-    } = await this.supabase.auth.getSession();
+    } = await this.getSession();
 
     return session != null;
   }

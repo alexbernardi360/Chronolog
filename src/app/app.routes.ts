@@ -5,15 +5,24 @@ import { unauthGuard } from './core/providers/unauth.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
-  },
-  {
-    path: 'home',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./routes/home/home.component').then((m) => m.HomeComponent),
+      import('./core/layout/main-layout.component').then((m) => m.MainLayoutComponent),
+    children: [
+      {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full',
+      },
+      {
+        path: 'home',
+        loadComponent: () =>
+          import('./routes/home/home.component').then((m) => m.HomeComponent),
+      },
+    ],
   },
+
+  // #region Login
   {
     path: 'login',
     canActivate: [unauthGuard],
@@ -22,6 +31,9 @@ export const routes: Routes = [
         (m) => m.LoginComponent
       ),
   },
+  // #endregion
+
+  // #region Errors
   {
     path: 'error',
     children: [
@@ -34,9 +46,13 @@ export const routes: Routes = [
       },
     ],
   },
+  // #endregion
+
+  // #region Fallback
   {
     path: '**',
     redirectTo: 'error/404',
     pathMatch: 'full',
   },
+  // #endregion
 ];

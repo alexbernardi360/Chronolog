@@ -15,6 +15,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       </div>
     </div>
   `,
+  styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotFoundComponent {}

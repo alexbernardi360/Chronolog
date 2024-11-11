@@ -7,19 +7,11 @@ import { AuthService } from '../../shared/services/auth.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="flex flex-col gap-y-5 items-center justify-center min-h-screen">
-      <button class="btn btn-error" (click)="signOut()">Logout</button>
+    <div class="flex flex-col gap-y-5 items-center justify-center h-full">
+      Home Page
     </div>
   `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent {
-  private auth = inject(AuthService);
-  private router = inject(Router);
-
-  async signOut() {
-    await this.auth.signOut();
-    await this.router.navigate(['login']);
-  }
-}
+export class HomeComponent {}
