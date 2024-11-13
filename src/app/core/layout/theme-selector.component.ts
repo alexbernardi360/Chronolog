@@ -13,7 +13,7 @@ import { getTheme } from '../../shared/domain/common.utils';
   standalone: true,
   imports: [],
   template: `
-    <label class="swap swap-rotate">
+    <label class="swap swap-rotate align-middle">
       <!-- this hidden checkbox controls the state -->
       <input
         type="checkbox"
