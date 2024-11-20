@@ -3,7 +3,6 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './navbar.component';
 
 @Component({
-  selector: 'app-main-layout',
   standalone: true,
   imports: [NavbarComponent, RouterOutlet],
   template: `
@@ -12,9 +11,9 @@ import { NavbarComponent } from './navbar.component';
         <core-navbar />
       </div>
 
-      <div class="grow h-full">
+      <main class="flex-1 overflow-y-auto p-4 container mx-auto">
         <router-outlet />
-      </div>
+      </main>
     </div>
   `,
   styles: [],

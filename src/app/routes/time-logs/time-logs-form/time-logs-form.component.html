@@ -1,0 +1,88 @@
+<div class="card w-full bg-base-100 shadow-xl">
+  <div class="card-body">
+    <div class="card-title text-xl font-semibold">
+      {{ isNew() ? "Add New" : "Edit" }} Time Log
+    </div>
+
+    <div class="divider my-2"></div>
+
+    <form
+      [formGroup]="formGroup"
+      (ngSubmit)="onSubmit()"
+      class="form-control space-y-4"
+    >
+      <!-- #region Timestamp -->
+      <div>
+        <label class="label">
+          <span class="label-text">Timestamp</span>
+        </label>
+        <input
+          type="datetime-local"
+          formControlName="timestamp"
+          class="input input-bordered w-full"
+          [class.input-error]="
+            timestamp.invalid && (timestamp.dirty || timestamp.touched)
+          "
+        />
+        @if (timestamp.touched && timestamp.invalid) {
+        <label class="label pb-0">
+          <span class="label-text-alt text-error">
+            Timestamp is required.
+          </span>
+        </label>
+        }
+      </div>
+      <!-- #endregion -->
+
+      <!--#region Type-->
+      <div>
+        <label class="label">
+          <span class="label-text">Type</span>
+        </label>
+        <select
+          formControlName="type"
+          class="select select-bordered w-full"
+          [class.input-error]="type.invalid && (type.dirty || type.touched)"
+        >
+          <option value="" disabled>Seleziona il tipo</option>
+          <option value="entry">Entry</option>
+          <option value="exit">Exit</option>
+        </select>
+        @if (type.touched && type.invalid) {
+        <label class="label pb-0">
+          <span class="label-text-alt text-error"> Type is required. </span>
+        </label>
+        }
+      </div>
+      <!-- #endregion -->
+
+      <!-- #region Note -->
+      <div>
+        <label class="label">
+          <span class="label-text">Note</span>
+        </label>
+        <textarea
+          formControlName="note"
+          class="textarea textarea-bordered w-full"
+          placeholder="Inserisci note (opzionale)"
+        ></textarea>
+      </div>
+      <!-- #endregion -->
+
+      <!-- #region Buttons -->
+      <div class="card-actions justify-end">
+        <button class="btn btn-ghost" routerLink="/time-logs">Cancel</button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="formGroup.invalid"
+        >
+          @if (submitting()){
+          <span class="loading loading-spinner"></span>
+          } Login
+        </button>
+      </div>
+      <!-- #endregion -->
+    </form>
+  </div>
+</div>

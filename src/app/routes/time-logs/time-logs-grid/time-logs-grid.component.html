@@ -1,0 +1,86 @@
+<div class="card w-full bg-base-100 shadow-xl">
+  <div class="card-body">
+    <div class="card-title justify-between text-xl font-semibold">
+      Time Logs
+      <a class="btn btn-sm btn-info" routerLink="./new">Add New</a>
+    </div>
+
+    <div class="divider my-2"></div>
+
+    <div class="overflow-x-auto">
+      <table class="table table-pin-rows table-pin-cols">
+        <thead>
+          <tr>
+            <td>Date</td>
+            <td>Time</td>
+            <td>Type</td>
+            <td>Created at</td>
+            <td>Updated at</td>
+            <td>Note</td>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (item of timeLogs(); track item.id) {
+          <tr>
+            <td class="whitespace-nowrap">
+              {{ item.timestamp | date : "dd/MM/yyyy" }}
+            </td>
+            <td class="whitespace-nowrap">
+              {{ item.timestamp | date : "HH:mm" }}
+            </td>
+            <td class="whitespace-nowrap">
+              {{ item.type }}
+            </td>
+            <td class="whitespace-nowrap">
+              {{ item.created_at | date : "dd/MM/yyyy, HH:mm:ss" }}
+            </td>
+            <td class="whitespace-nowrap">
+              {{ item.created_at | date : "dd/MM/yyyy, HH:mm:ss" }}
+            </td>
+            <td class="truncate max-w-xs">
+              {{ item.note }}
+            </td>
+            <td>
+              <div class="flex gap-4">
+                <a [routerLink]="['./edit', item.id]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    fill="currentColor"
+                    class="text-info"
+                  >
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path
+                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                    />
+                  </svg>
+                </a>
+
+                <button type="button" (click)="deleteRow(item.id!)">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    fill="currentColor"
+                    class="text-error"
+                  >
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path
+                      d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
