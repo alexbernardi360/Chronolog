@@ -23,80 +23,80 @@
 
         <tbody>
           @for (item of timeLogs(); track item.id) {
-          <tr class="hover:bg-base-200">
-            <td class="whitespace-nowrap">
-              {{ item.timestamp | date : "dd/MM/yyyy" }}
-            </td>
-            <td class="whitespace-nowrap">
-              {{ item.timestamp | date : "HH:mm" }}
-            </td>
-            <td>
-              <div
-                class="badge badge-sm badge-outline font-mono font-bold uppercase"
-                [ngClass]="{
-                  'badge-success': item.type === 'entry',
-                  'badge-error': item.type === 'exit'
-                }"
-              >
-                {{ item.type }}
-              </div>
-            </td>
-            <td class="whitespace-nowrap">
-              {{ item.created_at | date : "dd/MM/yyyy, HH:mm:ss" }}
-            </td>
-            <td class="whitespace-nowrap">
-              {{ item.created_at | date : "dd/MM/yyyy, HH:mm:ss" }}
-            </td>
-            <td class="truncate">
-              {{ item.note }}
-            </td>
-            <th>
-              <div class="flex justify-end">
-                <a
-                  class="btn btn-xs btn-ghost text-primary hover:bg-primary hover:text-primary-content"
-                  [routerLink]="['./edit', item.id]"
+            <tr class="hover:bg-base-200">
+              <td class="whitespace-nowrap">
+                {{ item.timestamp | date: "dd/MM/yyyy" }}
+              </td>
+              <td class="whitespace-nowrap">
+                {{ item.timestamp | date: "HH:mm" }}
+              </td>
+              <td>
+                <div
+                  class="badge badge-sm badge-outline font-mono font-bold uppercase"
+                  [ngClass]="{
+                    'badge-success': item.type === 'entry',
+                    'badge-error': item.type === 'exit',
+                  }"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 fill-current"
-                    viewBox="0 0 24 24"
+                  {{ item.type }}
+                </div>
+              </td>
+              <td class="whitespace-nowrap">
+                {{ item.created_at | date: "dd/MM/yyyy, HH:mm:ss" }}
+              </td>
+              <td class="whitespace-nowrap">
+                {{ item.created_at | date: "dd/MM/yyyy, HH:mm:ss" }}
+              </td>
+              <td class="truncate">
+                {{ item.note }}
+              </td>
+              <th>
+                <div class="flex justify-end">
+                  <a
+                    class="btn btn-xs btn-ghost text-primary hover:bg-primary hover:text-primary-content"
+                    [routerLink]="['./edit', item.id]"
                   >
-                    <path d="M0 0h24v24H0z" fill="none" />
-                    <path
-                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                    />
-                  </svg>
-                </a>
-                <button
-                  type="button"
-                  class="btn btn-xs btn-ghost text-error hover:bg-error hover:text-error-content"
-                  (click)="deleteRow(item.id!)"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 fill-current"
-                    viewBox="0 0 24 24"
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 fill-current"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M0 0h24v24H0z" fill="none" />
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                      />
+                    </svg>
+                  </a>
+                  <button
+                    type="button"
+                    class="btn btn-xs btn-ghost text-error hover:bg-error hover:text-error-content"
+                    (click)="deleteRow(item.id!)"
                   >
-                    <path d="M0 0h24v24H0z" fill="none" />
-                    <path
-                      d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </th>
-          </tr>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 fill-current"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M0 0h24v24H0z" fill="none" />
+                      <path
+                        d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </th>
+            </tr>
           }
         </tbody>
       </table>
     </div>
 
     @if (totalRows() != null) {
-    <shared-pager
-      [totalRows]="totalRows()!"
-      [pageSize]="currentPageSize()"
-      [(currentPage)]="currentPage"
-    />
+      <shared-pager
+        [totalRows]="totalRows()!"
+        [pageSize]="currentPageSize()"
+        [(currentPage)]="currentPage"
+      />
     }
   </div>
 </div>
