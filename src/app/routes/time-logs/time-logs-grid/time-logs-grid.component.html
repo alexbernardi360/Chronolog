@@ -2,13 +2,13 @@
   <div class="card-body">
     <div class="card-title justify-between text-xl font-semibold">
       Time Logs
-      <a class="btn btn-sm btn-info" routerLink="./new">Add New</a>
+      <a class="btn btn-sm btn-primary" routerLink="./new">Add New</a>
     </div>
 
     <div class="divider my-2"></div>
 
     <div class="overflow-x-auto">
-      <table class="table table-pin-rows table-pin-cols">
+      <table class="table table-xs table-pin-cols">
         <thead>
           <tr>
             <td>Date</td>
@@ -17,7 +17,7 @@
             <td>Created at</td>
             <td>Updated at</td>
             <td>Note</td>
-            <th>Actions</th>
+            <th></th>
           </tr>
         </thead>
 
@@ -42,45 +42,53 @@
             <td class="truncate max-w-xs">
               {{ item.note }}
             </td>
-            <td>
-              <div class="flex gap-4">
-                <a [routerLink]="['./edit', item.id]">
-                  <svg
+            <th>
+              <div class="flex justify-end gap-1">
+                <a class="btn btn-xs btn-primary" [routerLink]="['./edit', item.id]">
+                  <!-- <svg
                     xmlns="http://www.w3.org/2000/svg"
                     height="24px"
                     viewBox="0 0 24 24"
                     width="24px"
-                    fill="currentColor"
-                    class="text-info"
+                    class="text-primary fill-current"
                   >
                     <path d="M0 0h24v24H0z" fill="none" />
                     <path
                       d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
                     />
-                  </svg>
+                  </svg> -->
+                  Edit
                 </a>
 
-                <button type="button" (click)="deleteRow(item.id!)">
-                  <svg
+                <button type="button" class="btn btn-xs btn-error" (click)="deleteRow(item.id!)">
+                  <!-- <svg
                     xmlns="http://www.w3.org/2000/svg"
                     height="24px"
                     viewBox="0 0 24 24"
                     width="24px"
-                    fill="currentColor"
-                    class="text-error"
+                    class="text-error fill-current"
                   >
                     <path d="M0 0h24v24H0z" fill="none" />
                     <path
                       d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
                     />
-                  </svg>
+                  </svg> -->
+                  Delete
                 </button>
               </div>
-            </td>
+            </th>
           </tr>
           }
         </tbody>
       </table>
     </div>
+
+    @if (totalRows() != null) {
+    <shared-pager
+      [totalRows]="totalRows()!"
+      [pageSize]="currentPageSize()"
+      [(currentPage)]="currentPage"
+    />
+    }
   </div>
 </div>

@@ -8,10 +8,10 @@ import { UserDropdownComponent } from './user-dropdown.component';
   standalone: true,
   imports: [RouterLink, ThemeSelectorComponent, UserDropdownComponent],
   template: `
-    <div class="navbar bg-base-100">
+    <div class="navbar sticky top-0 bg-base-100 z-10 shadow-md ">
       <div class="flex-1">
         <a class="btn btn-ghost normal-case text-xl" routerLink="/">
-          <div class="font-title1 inline-flex text-lg md:text-2xl font-mono">
+          <div class="inline-flex text-lg md:text-2xl font-mono">
             Chronolog
           </div>
         </a>
@@ -21,7 +21,8 @@ import { UserDropdownComponent } from './user-dropdown.component';
         <div class="flex-none items-center">
           <a
             class="btn btn-ghost drawer-button font-normal"
-            routerLink="/time-logs">
+            routerLink="/time-logs"
+          >
             Time Logs
           </a>
         </div>

@@ -11,7 +11,7 @@ import { NavbarComponent } from './navbar.component';
         <core-navbar />
       </div>
 
-      <main class="flex-1 overflow-y-auto p-4 container mx-auto">
+      <main class="grow h-full overflow-y-auto p-4 container mx-auto">
         <router-outlet />
       </main>
     </div>

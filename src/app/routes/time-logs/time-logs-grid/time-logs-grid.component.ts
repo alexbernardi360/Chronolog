@@ -2,17 +2,20 @@ import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
   OnInit,
   signal,
 } from '@angular/core';
-import { TimeLogsService } from '../../../shared/services/time-logs.service';
 import { RouterLink } from '@angular/router';
 import { TimeLog } from '../../../shared/domain/time_log.interface';
+import { PagerComponent } from '../../../shared/pager/pager.component';
+import { TimeLogsService } from '../../../shared/services/time-logs.service';
+import { concatMap } from 'rxjs';
 
 @Component({
   standalone: true,
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, PagerComponent],
   templateUrl: './time-logs-grid.component.html',
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,20 +24,38 @@ export class TimeLogsGridComponent implements OnInit {
   private timeLogsService = inject(TimeLogsService);
 
   timeLogs = signal<TimeLog[]>([]);
+  totalRows = signal<number | null>(null);
+  currentPage = signal<number>(1);
+  currentPageSize = signal<number>(10);
+
+  constructor() {
+    effect(() =>
+      this.timeLogsService
+        .getTimeLogs(this.currentPageSize(), this.currentPage())
+        .subscribe((timeLogs) => this.timeLogs.set(timeLogs))
+    );
+  }
 
   ngOnInit(): void {
     this.timeLogsService
-      .getTimeLogs()
-      .subscribe((timeLogs) => this.timeLogs.set(timeLogs));
+      .getTimeLogsCount()
+      .subscribe((count) => this.totalRows.set(count));
   }
 
   deleteRow(id: string) {
     this.timeLogsService
       .deleteTimeLog(id)
-      .subscribe(() =>
-        this.timeLogs.update((timeLogs) =>
-          timeLogs.filter((timeLog) => timeLog.id !== id)
+      .pipe(
+        concatMap(() =>
+          this.timeLogsService.getTimeLogs(
+            this.currentPageSize(),
+            this.currentPage()
+          )
         )
-      );
+      )
+      .subscribe({
+        next: (timeLogs) => this.timeLogs.set(timeLogs),
+        error: (error) => console.error('Errore:', error),
+      });
   }
 }

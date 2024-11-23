@@ -12,11 +12,14 @@ export class TimeLogsService {
     import.meta.env.NG_APP_SUPABASE_KEY
   );
 
-  getTimeLogs() {
+  getTimeLogs(pageSize: number, currentPage: number) {
+    const offset = (currentPage - 1) * pageSize;
+
     const request = this.supabase
       .from('time_records')
       .select('id,created_at,updated_at,timestamp,type,note')
-      .order('timestamp', { ascending: false });
+      .order('timestamp', { ascending: false })
+      .range(offset, offset + pageSize - 1);
 
     return from(request).pipe(
       map((result) => {
@@ -27,6 +30,24 @@ export class TimeLogsService {
       catchError((error) => {
         console.error('Error fetching time records:', error);
         return of([] as TimeLog[]);
+      })
+    );
+  }
+
+  getTimeLogsCount() {
+    const request = this.supabase
+      .from('time_records')
+      .select('*', { count: 'exact', head: true });
+
+    return from(request).pipe(
+      map((result) => {
+        if (result.error) throw result.error;
+
+        return result.count;
+      }),
+      catchError((error) => {
+        console.error('Error fetching time records:', error);
+        return of(null);
       })
     );
   }
@@ -84,10 +105,7 @@ export class TimeLogsService {
   }
 
   deleteTimeLog(id: string) {
-    const request = this.supabase
-      .from('time_records')
-      .delete()
-      .eq('id', id);
+    const request = this.supabase.from('time_records').delete().eq('id', id);
 
     return from(request).pipe(
       map((result) => {
