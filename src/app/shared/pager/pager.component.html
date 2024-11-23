@@ -1,0 +1,52 @@
+@if (isVisible()) {
+  <div class="flex justify-center mt-4 gap-1">
+    <!-- Previous Button -->
+    <button
+      class="btn btn-sm btn-outline btn-primary"
+      [disabled]="isPreviousDisabled()"
+      (click)="previousPage()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 fill-current"
+        viewBox="0 0 24 24"
+      >
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+
+    <!-- Page Numbers -->
+    <div class="flex gap-1 overflow-x-auto">
+      @for(page of pages(); track page.key) {
+      <button
+        class="btn btn-sm"
+        [ngClass]="{
+          'btn-primary': page.value === currentPage(),
+          'btn-disabled': page.value === null,
+        }"
+        [disabled]="page.value === null"
+        (click)="page.value !== null && changePage(page.value)"
+      >
+        {{ page.value ?? '...' }}
+      </button>
+      }
+    </div>
+
+    <!-- Next Button -->
+    <button
+      class="btn btn-sm btn-outline btn-primary"
+      [disabled]="isNextDisabled()"
+      (click)="nextPage()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 fill-current"
+        viewBox="0 0 24 24"
+      >
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+      </svg>
+    </button>
+  </div>
+  }
