@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,7 +15,7 @@ import { concatMap } from 'rxjs';
 
 @Component({
   standalone: true,
-  imports: [DatePipe, RouterLink, PagerComponent],
+  imports: [DatePipe, NgClass, RouterLink, PagerComponent],
   templateUrl: './time-logs-grid.component.html',
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,

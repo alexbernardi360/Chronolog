@@ -12,46 +12,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'shared-pager',
   standalone: true,
   imports: [FormsModule, NgClass],
-  template: `
-    @if (isVisible()) {
-    <div class="flex justify-center mt-4 gap-1">
-      <!-- Previous Button -->
-      <button
-        class="btn btn-sm btn-outline btn-primary"
-        [disabled]="isPreviousDisabled()"
-        (click)="previousPage()"
-      >
-        « Previous
-      </button>
-
-      <!-- Page Numbers -->
-      <div class="flex gap-1 overflow-x-auto">
-        @for(page of pages(); track page.key) {
-        <button
-          class="btn btn-sm"
-          [ngClass]="{
-            'btn-primary': page.value === currentPage(),
-            'btn-disabled': page.value === null,
-          }"
-          [disabled]="page.value === null"
-          (click)="page.value !== null && changePage(page.value)"
-        >
-          {{ page.value || '...' }}
-        </button>
-        }
-      </div>
-
-      <!-- Next Button -->
-      <button
-        class="btn btn-sm btn-outline btn-primary"
-        [disabled]="isNextDisabled()"
-        (click)="nextPage()"
-      >
-        Next »
-      </button>
-    </div>
-    }
-  `,
+  templateUrl: './pager.component.html',
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

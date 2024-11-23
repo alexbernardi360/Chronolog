@@ -8,30 +8,38 @@
     <div class="divider my-2"></div>
 
     <div class="overflow-x-auto">
-      <table class="table table-xs table-pin-cols">
+      <table class="table table-xs table-pin-cols table-fixed w-full">
         <thead>
           <tr>
-            <td>Date</td>
-            <td>Time</td>
-            <td>Type</td>
-            <td>Created at</td>
-            <td>Updated at</td>
-            <td>Note</td>
-            <th></th>
+            <td class="w-[80px]">Date</td>
+            <td class="w-[60px]">Time</td>
+            <td class="w-[80px]">Type</td>
+            <td class="w-[140px]">Created at</td>
+            <td class="w-[140px]">Updated at</td>
+            <td class="w-[350px]">Note</td>
+            <th class="w-[80px]"></th>
           </tr>
         </thead>
 
         <tbody>
           @for (item of timeLogs(); track item.id) {
-          <tr>
+          <tr class="hover:bg-base-200">
             <td class="whitespace-nowrap">
               {{ item.timestamp | date : "dd/MM/yyyy" }}
             </td>
             <td class="whitespace-nowrap">
               {{ item.timestamp | date : "HH:mm" }}
             </td>
-            <td class="whitespace-nowrap">
-              {{ item.type }}
+            <td>
+              <div
+                class="badge badge-sm badge-outline font-mono font-bold uppercase"
+                [ngClass]="{
+                  'badge-success': item.type === 'entry',
+                  'badge-error': item.type === 'exit'
+                }"
+              >
+                {{ item.type }}
+              </div>
             </td>
             <td class="whitespace-nowrap">
               {{ item.created_at | date : "dd/MM/yyyy, HH:mm:ss" }}
@@ -39,41 +47,41 @@
             <td class="whitespace-nowrap">
               {{ item.created_at | date : "dd/MM/yyyy, HH:mm:ss" }}
             </td>
-            <td class="truncate max-w-xs">
+            <td class="truncate">
               {{ item.note }}
             </td>
             <th>
-              <div class="flex justify-end gap-1">
-                <a class="btn btn-xs btn-primary" [routerLink]="['./edit', item.id]">
-                  <!-- <svg
+              <div class="flex justify-end">
+                <a
+                  class="btn btn-xs btn-ghost text-primary hover:bg-primary hover:text-primary-content"
+                  [routerLink]="['./edit', item.id]"
+                >
+                  <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    height="24px"
+                    class="h-4 w-4 fill-current"
                     viewBox="0 0 24 24"
-                    width="24px"
-                    class="text-primary fill-current"
                   >
                     <path d="M0 0h24v24H0z" fill="none" />
                     <path
                       d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
                     />
-                  </svg> -->
-                  Edit
+                  </svg>
                 </a>
-
-                <button type="button" class="btn btn-xs btn-error" (click)="deleteRow(item.id!)">
-                  <!-- <svg
+                <button
+                  type="button"
+                  class="btn btn-xs btn-ghost text-error hover:bg-error hover:text-error-content"
+                  (click)="deleteRow(item.id!)"
+                >
+                  <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    height="24px"
+                    class="h-4 w-4 fill-current"
                     viewBox="0 0 24 24"
-                    width="24px"
-                    class="text-error fill-current"
                   >
                     <path d="M0 0h24v24H0z" fill="none" />
                     <path
                       d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
                     />
-                  </svg> -->
-                  Delete
+                  </svg>
                 </button>
               </div>
             </th>
