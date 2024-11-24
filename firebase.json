@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/Chronolog/browser",
+    "public": "dist/chronolog/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
