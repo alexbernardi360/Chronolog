@@ -20,6 +20,13 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Authenticate with Firebase
+        run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_CHRONOLOG_FFA15 }}" > "${HOME}/firebase-service-account.json" && firebase use --add && firebase login:ci --token "$(cat ${HOME}/firebase-service-account.json)"
+
+
       - name: Retrieve Firebase Environment Variables
         run: firebase functions:config:get > .firebase-env.json
 
