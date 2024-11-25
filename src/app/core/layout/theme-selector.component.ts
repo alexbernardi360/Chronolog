@@ -63,6 +63,7 @@ export class ThemeSelectorComponent implements OnInit {
   setMetaThemeColor() {
     const elem = document.documentElement;
     const color = getComputedStyle(elem).getPropertyValue('--b1');
-    this.meta.updateTag({ content: `hsl(${color})` }, 'name=theme-color');
+
+    this.meta.updateTag({ content: `oklch(${color})` }, 'name=theme-color');
   }
 }
