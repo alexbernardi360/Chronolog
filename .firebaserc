@@ -1,6 +1,5 @@
 {
-  "hosting": {
-    "site": "chronolog-pwa",
-    "public": "public"
+  "projects": {
+    "default": "chronolog-ffa15"
   }
 }
