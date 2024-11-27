@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  standalone: true,
   imports: [],
   template: `
     <div class="hero h-full">

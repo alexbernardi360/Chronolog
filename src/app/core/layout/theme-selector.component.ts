@@ -10,7 +10,6 @@ import { getTheme } from '../../shared/domain/common.utils';
 
 @Component({
   selector: 'core-theme-selector',
-  standalone: true,
   imports: [],
   template: `
     <label class="swap swap-rotate align-middle">

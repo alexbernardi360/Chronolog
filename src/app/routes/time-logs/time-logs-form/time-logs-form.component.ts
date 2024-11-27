@@ -18,7 +18,6 @@ import { TimeLog } from '../../../shared/domain/time_log.interface';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
 
 @Component({
-  standalone: true,
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './time-logs-form.component.html',
   styles: [],
@@ -81,7 +80,7 @@ export class TimeLogsFormComponent implements OnInit {
         finalize(() => {
           this.formGroup.enable();
           this.submitting.set(false);
-        })
+        }),
       )
       .subscribe({
         next: () => {

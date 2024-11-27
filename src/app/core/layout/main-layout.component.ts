@@ -3,7 +3,6 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './navbar.component';
 
 @Component({
-  standalone: true,
   imports: [NavbarComponent, RouterOutlet],
   template: `
     <div class="flex flex-col h-screen">

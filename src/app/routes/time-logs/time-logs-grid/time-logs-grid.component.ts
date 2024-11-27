@@ -8,13 +8,12 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { concatMap } from 'rxjs';
 import { TimeLog } from '../../../shared/domain/time_log.interface';
 import { PagerComponent } from '../../../shared/pager/pager.component';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
-import { concatMap } from 'rxjs';
 
 @Component({
-  standalone: true,
   imports: [DatePipe, NgClass, RouterLink, PagerComponent],
   templateUrl: './time-logs-grid.component.html',
   styles: [],
@@ -32,7 +31,7 @@ export class TimeLogsGridComponent implements OnInit {
     effect(() =>
       this.timeLogsService
         .getTimeLogs(this.currentPageSize(), this.currentPage())
-        .subscribe((timeLogs) => this.timeLogs.set(timeLogs))
+        .subscribe((timeLogs) => this.timeLogs.set(timeLogs)),
     );
   }
 
@@ -49,9 +48,9 @@ export class TimeLogsGridComponent implements OnInit {
         concatMap(() =>
           this.timeLogsService.getTimeLogs(
             this.currentPageSize(),
-            this.currentPage()
-          )
-        )
+            this.currentPage(),
+          ),
+        ),
       )
       .subscribe({
         next: (timeLogs) => this.timeLogs.set(timeLogs),
