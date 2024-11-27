@@ -10,7 +10,6 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'shared-pager',
-  standalone: true,
   imports: [FormsModule, NgClass],
   templateUrl: './pager.component.html',
   styles: [],
@@ -29,7 +28,7 @@ export class PagerComponent {
 
     if (totalPages <= maxButtons) {
       return Array.from({ length: totalPages }, (_, i) => i + 1).map(
-        (page, index) => ({ key: index, value: page })
+        (page, index) => ({ key: index, value: page }),
       );
     }
 

@@ -5,15 +5,12 @@ import { UserDropdownComponent } from './user-dropdown.component';
 
 @Component({
   selector: 'core-navbar',
-  standalone: true,
   imports: [RouterLink, ThemeSelectorComponent, UserDropdownComponent],
   template: `
     <div class="navbar sticky top-0 bg-base-100 z-10 shadow-md ">
       <div class="flex-1">
         <a class="btn btn-ghost normal-case text-xl" routerLink="/">
-          <div class="inline-flex text-lg md:text-2xl font-mono">
-            Chronolog
-          </div>
+          <div class="inline-flex text-lg md:text-2xl font-mono">Chronolog</div>
         </a>
       </div>
 

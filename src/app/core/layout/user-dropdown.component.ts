@@ -10,7 +10,6 @@ import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'core-user-dropdown',
-  standalone: true,
   imports: [],
   template: `
     <div class="dropdown dropdown-end">

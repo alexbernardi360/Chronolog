@@ -15,7 +15,6 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
-  standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './login.component.html',
   styles: [],
