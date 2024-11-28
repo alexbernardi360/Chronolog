@@ -2,14 +2,12 @@ import { DatePipe, NgClass } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
+  computed,
   inject,
-  OnInit,
   signal,
 } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { concatMap } from 'rxjs';
-import { TimeLog } from '../../../shared/domain/time_log.interface';
 import { PagerComponent } from '../../../shared/pager/pager.component';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
 
@@ -19,42 +17,52 @@ import { TimeLogsService } from '../../../shared/services/time-logs.service';
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimeLogsGridComponent implements OnInit {
+export class TimeLogsGridComponent {
   private timeLogsService = inject(TimeLogsService);
 
-  timeLogs = signal<TimeLog[]>([]);
-  totalRows = signal<number | null>(null);
   currentPage = signal<number>(1);
   currentPageSize = signal<number>(10);
 
-  constructor() {
-    effect(() =>
-      this.timeLogsService
-        .getTimeLogs(this.currentPageSize(), this.currentPage())
-        .subscribe((timeLogs) => this.timeLogs.set(timeLogs)),
-    );
-  }
+  loadingRows = computed(() => {
+    const total = this.totalRowsResource.value() ?? 0;
+    const page = this.currentPage();
+    let pageSize = this.currentPageSize();
 
-  ngOnInit(): void {
-    this.timeLogsService
-      .getTimeLogsCount()
-      .subscribe((count) => this.totalRows.set(count));
-  }
+    const totalPages = Math.ceil(total / pageSize);
+
+    if (page === totalPages) {
+      pageSize = total % pageSize || pageSize;
+    }
+
+    return Array(pageSize)
+      .fill(0)
+      .map((_x, i) => i);
+  });
+
+  totalRowsResource = rxResource({
+    loader: () => this.timeLogsService.getTimeLogsCount(),
+  });
+
+  timeLogsResource = rxResource({
+    request: () => ({
+      currentPage: this.currentPage(),
+      currentPageSize: this.currentPageSize(),
+    }),
+    loader: (params) =>
+      this.timeLogsService.getTimeLogs(
+        params.request.currentPageSize,
+        params.request.currentPage,
+      ),
+  });
 
   deleteRow(id: string) {
-    this.timeLogsService
-      .deleteTimeLog(id)
-      .pipe(
-        concatMap(() =>
-          this.timeLogsService.getTimeLogs(
-            this.currentPageSize(),
-            this.currentPage(),
-          ),
-        ),
-      )
-      .subscribe({
-        next: (timeLogs) => this.timeLogs.set(timeLogs),
-        error: (error) => console.error('Errore:', error),
-      });
+    this.timeLogsService.deleteTimeLog(id).subscribe({
+      next: () => this.timeLogsResource.reload(),
+      error: (error) => console.error('Errore:', error),
+    });
+  }
+
+  getRandomWidth(minWidth: number, maxWidth: number) {
+    return Math.random() * (maxWidth - minWidth + 1) + minWidth;
   }
 }
