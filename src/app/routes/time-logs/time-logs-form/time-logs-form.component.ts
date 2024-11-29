@@ -34,7 +34,10 @@ export class TimeLogsFormComponent implements OnInit {
   submitting = signal(false);
 
   formGroup = new FormGroup({
-    timestamp: new FormControl<string | null>(null, [Validators.required]),
+    timestamp: new FormControl<string | null>(
+      this.toLocalDateString(new Date()),
+      [Validators.required],
+    ),
     type: new FormControl<'entry' | 'exit' | null>(null, [Validators.required]),
     note: new FormControl<string | null>(null),
   });
@@ -90,5 +93,17 @@ export class TimeLogsFormComponent implements OnInit {
         },
         error: (err) => console.error(err),
       });
+  }
+
+  private toLocalDateString(date: Date): string {
+    return (
+      date.getFullYear().toString() +
+      '-' +
+      ('0' + (date.getMonth() + 1)).slice(-2) +
+      '-' +
+      ('0' + date.getDate()).slice(-2) +
+      'T' +
+      date.toTimeString().slice(0, 5)
+    );
   }
 }
