@@ -21,10 +21,8 @@
       @for(page of pages(); track page.key) {
       <button
         class="btn btn-sm"
-        [ngClass]="{
-          'btn-primary': page.value === currentPage(),
-          'btn-disabled': page.value === null,
-        }"
+        [class.btn-primary]="page.value === currentPage()"
+        [class.btn-disabled]="page.value === null"
         [disabled]="page.value === null"
         (click)="page.value !== null && changePage(page.value)"
       >

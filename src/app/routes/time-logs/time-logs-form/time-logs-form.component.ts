@@ -14,7 +14,8 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-import { TimeLog } from '../../../shared/domain/time_log.interface';
+import { toLocalDateString } from '../../../shared/domain/date-time.utils';
+import { EntryType, TimeLog } from '../../../shared/domain/time_log.interface';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
 
 @Component({
@@ -24,21 +25,20 @@ import { TimeLogsService } from '../../../shared/services/time-logs.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeLogsFormComponent implements OnInit {
-  private timeLogsService = inject(TimeLogsService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  private readonly timeLogsService = inject(TimeLogsService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   timeLogId = signal<string | null>(null);
   isNew = computed(() => this.timeLogId() == null);
 
   submitting = signal(false);
 
-  formGroup = new FormGroup({
-    timestamp: new FormControl<string | null>(
-      this.toLocalDateString(new Date()),
-      [Validators.required],
-    ),
-    type: new FormControl<'entry' | 'exit' | null>(null, [Validators.required]),
+  readonly formGroup = new FormGroup({
+    timestamp: new FormControl<string | null>(toLocalDateString(new Date()), [
+      Validators.required,
+    ]),
+    type: new FormControl<EntryType | null>(null, [Validators.required]),
     note: new FormControl<string | null>(null),
   });
 
@@ -93,17 +93,5 @@ export class TimeLogsFormComponent implements OnInit {
         },
         error: (err) => console.error(err),
       });
-  }
-
-  private toLocalDateString(date: Date): string {
-    return (
-      date.getFullYear().toString() +
-      '-' +
-      ('0' + (date.getMonth() + 1)).slice(-2) +
-      '-' +
-      ('0' + date.getDate()).slice(-2) +
-      'T' +
-      date.toTimeString().slice(0, 5)
-    );
   }
 }
