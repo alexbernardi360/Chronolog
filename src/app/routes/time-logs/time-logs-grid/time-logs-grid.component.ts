@@ -13,6 +13,7 @@ import { PagerComponent } from '../../../shared/components/pager/pager.component
 import { QuickInsertDialogComponent } from '../../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
 import { EntryTypeBadgeComponent } from '../../../shared/components/entry-type-badge/entry-type-badge.component';
+import { filter } from 'rxjs';
 
 @Component({
   imports: [
@@ -34,22 +35,6 @@ export class TimeLogsGridComponent {
   currentPage = signal<number>(1);
   currentPageSize = signal<number>(10);
 
-  loadingRows = computed(() => {
-    const total = this.totalRowsResource.value() ?? 0;
-    const page = this.currentPage();
-    let pageSize = this.currentPageSize();
-
-    const totalPages = Math.ceil(total / pageSize);
-
-    if (page === totalPages) {
-      pageSize = total % pageSize || pageSize;
-    }
-
-    return Array(pageSize)
-      .fill(0)
-      .map((_x, i) => i);
-  });
-
   totalRowsResource = rxResource({
     loader: () => this.timeLogsService.getTimeLogsCount(),
   });
@@ -66,9 +51,28 @@ export class TimeLogsGridComponent {
       ),
   });
 
+  loadingRows = computed(() => {
+    const total = this.totalRowsResource.value() ?? 0;
+    const page = this.currentPage();
+    let pageSize = this.currentPageSize();
+
+    const totalPages = Math.ceil(total / pageSize);
+
+    if (page === totalPages) {
+      pageSize = total % pageSize || pageSize;
+    }
+
+    return Array(pageSize)
+      .fill(0)
+      .map((_x, i) => i);
+  });
+
   deleteRow(id: string) {
     this.timeLogsService.deleteTimeLog(id).subscribe({
-      next: () => this.timeLogsResource.reload(),
+      next: () => {
+        this.totalRowsResource.reload();
+        this.timeLogsResource.reload();
+      },
       error: (error) => console.error('Errore:', error),
     });
   }
@@ -78,13 +82,13 @@ export class TimeLogsGridComponent {
   }
 
   openQuickInsertDialog() {
-    const dialogRef = this.dialog.open<string>(QuickInsertDialogComponent, {
-      width: '250px',
-      data: {},
-    });
+    const dialogRef = this.dialog.open<boolean>(QuickInsertDialogComponent);
 
-    dialogRef.closed.subscribe((result) => {
-      console.log('The dialog was closed', result);
-    });
+    dialogRef.closed
+      .pipe(filter((result) => result === true))
+      .subscribe(() => {
+        this.totalRowsResource.reload();
+        this.timeLogsResource.reload();
+      });
   }
 }

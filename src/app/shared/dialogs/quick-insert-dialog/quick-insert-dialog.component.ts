@@ -28,7 +28,7 @@ import { EntryTypeBadgeComponent } from '../../components/entry-type-badge/entry
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuickInsertDialogComponent {
-  private readonly dialogRef = inject(DialogRef<QuickInsertDialogComponent>);
+  private readonly dialogRef = inject(DialogRef<boolean, QuickInsertDialogComponent>);
   private readonly timeLogsService = inject(TimeLogsService);
 
   readonly submitting = signal(false);
@@ -110,12 +110,12 @@ export class QuickInsertDialogComponent {
         }),
       )
       .subscribe({
-        next: () => this.close(),
+        next: () => this.dialogRef.close(true),
         error: (err) => console.error(err),
       });
   }
 
-  close(): void {
-    this.dialogRef.close();
+  cancel(): void {
+    this.dialogRef.close(false);
   }
 }
