@@ -2,7 +2,15 @@
   <div class="card-body">
     <div class="card-title justify-between text-xl font-semibold">
       Time Logs
-      <a class="btn btn-sm btn-primary" routerLink="./new">Add New</a>
+      <div>
+        <button
+          class="btn btn-sm btn-primary mr-2"
+          (click)="openQuickInsertDialog()"
+        >
+          Quick Insert
+        </button>
+        <a class="btn btn-sm btn-primary" routerLink="./new">Add New</a>
+      </div>
     </div>
 
     <div class="divider my-2"></div>
@@ -61,15 +69,7 @@
                   {{ item.timestamp | date: "HH:mm" }}
                 </td>
                 <td>
-                  <div
-                    class="badge badge-sm badge-outline font-mono font-bold uppercase"
-                    [ngClass]="{
-                      'badge-success': item.type === 'entry',
-                      'badge-error': item.type === 'exit',
-                    }"
-                  >
-                    {{ item.type }}
-                  </div>
+                  <shared-entry-type-badge [type]="item.type" />
                 </td>
                 <td class="whitespace-nowrap">
                   {{ item.created_at | date: "dd/MM/yyyy, HH:mm:ss" }}
