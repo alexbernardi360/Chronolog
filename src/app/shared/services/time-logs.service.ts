@@ -7,9 +7,9 @@ import { TimeLog } from '../domain/time_log.interface';
   providedIn: 'root',
 })
 export class TimeLogsService {
-  private supabase = createClient(
+  private readonly supabase = createClient(
     import.meta.env.NG_APP_SUPABASE_URL,
-    import.meta.env.NG_APP_SUPABASE_KEY
+    import.meta.env.NG_APP_SUPABASE_KEY,
   );
 
   getTimeLogs(pageSize: number, currentPage: number) {
@@ -30,7 +30,7 @@ export class TimeLogsService {
       catchError((error) => {
         console.error('Error fetching time records:', error);
         return of([] as TimeLog[]);
-      })
+      }),
     );
   }
 
@@ -48,7 +48,7 @@ export class TimeLogsService {
       catchError((error) => {
         console.error('Error fetching time records:', error);
         return of(null);
-      })
+      }),
     );
   }
 
@@ -69,21 +69,25 @@ export class TimeLogsService {
       catchError((error) => {
         console.error('Error fetching time records', error);
         return of(null);
-      })
+      }),
     );
   }
 
   createNewTimeLog(timeLog: TimeLog) {
-    const request = this.supabase.from('time_records').insert([timeLog]);
+    return this.createNewTimeLogs([timeLog]);
+  }
+
+  createNewTimeLogs(timeLogs: TimeLog[]) {
+    const request = this.supabase.from('time_records').insert(timeLogs);
 
     return from(request).pipe(
       map((result) => {
         if (result.error) throw result.error;
       }),
       catchError((error) => {
-        console.error('Error creating time record:', error);
+        console.error('Error creating time records:', error);
         return of();
-      })
+      }),
     );
   }
 
@@ -100,7 +104,7 @@ export class TimeLogsService {
       catchError((error) => {
         console.error('Error updating time record:', error);
         return of();
-      })
+      }),
     );
   }
 
@@ -114,7 +118,7 @@ export class TimeLogsService {
       catchError((error) => {
         console.error('Error deleting time record:', error);
         return of();
-      })
+      }),
     );
   }
 }

@@ -4,5 +4,5 @@ export interface TimeLog {
   updated_at?: string,
   timestamp: string;
   type: 'entry' | 'exit';
-  note: string;
+  note: (string | null);
 }

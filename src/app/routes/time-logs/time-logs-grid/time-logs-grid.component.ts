@@ -1,3 +1,4 @@
+import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { DatePipe, NgClass } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -9,16 +10,24 @@ import {
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { PagerComponent } from '../../../shared/pager/pager.component';
+import { QuickInsertDialogComponent } from '../../../shared/quick-insert-dialog/quick-insert-dialog.component';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
 
 @Component({
-  imports: [DatePipe, NgClass, RouterLink, PagerComponent],
+  imports: [
+    DatePipe,
+    NgClass,
+    RouterLink,
+    DialogModule,
+    PagerComponent,
+  ],
   templateUrl: './time-logs-grid.component.html',
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeLogsGridComponent {
   private timeLogsService = inject(TimeLogsService);
+  private dialog = inject(Dialog);
 
   currentPage = signal<number>(1);
   currentPageSize = signal<number>(10);
@@ -64,5 +73,16 @@ export class TimeLogsGridComponent {
 
   getRandomWidth(minWidth: number, maxWidth: number) {
     return Math.random() * (maxWidth - minWidth + 1) + minWidth;
+  }
+
+  openQuickInsertDialog() {
+    const dialogRef = this.dialog.open<string>(QuickInsertDialogComponent, {
+      width: '250px',
+      data: {},
+    });
+
+    dialogRef.closed.subscribe((result) => {
+      console.log('The dialog was closed', result);
+    });
   }
 }

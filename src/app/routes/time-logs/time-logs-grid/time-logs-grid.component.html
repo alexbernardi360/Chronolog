@@ -2,7 +2,10 @@
   <div class="card-body">
     <div class="card-title justify-between text-xl font-semibold">
       Time Logs
-      <a class="btn btn-sm btn-primary" routerLink="./new">Add New</a>
+      <div>
+        <button class="btn btn-sm btn-primary mr-2" (click)="openQuickInsertDialog()">Quick Insert</button>
+        <a class="btn btn-sm btn-primary" routerLink="./new">Add New</a>
+      </div>
     </div>
 
     <div class="divider my-2"></div>

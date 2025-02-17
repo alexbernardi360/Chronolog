@@ -1,0 +1,180 @@
+<dialog class="modal modal-open">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Quick Insert</h3>
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+      <div class="grid grid-cols-2 gap-4 pt-4">
+        <!-- #region Date -->
+        <div>
+          <label class="label">
+            <span class="label-text">Date</span>
+          </label>
+          <input
+            type="date"
+            formControlName="date"
+            class="input input-bordered w-full"
+            [class.input-error]="date.invalid && (date.dirty || date.touched)"
+          />
+          @if (date.touched && date.invalid) {
+            <label class="label pb-0">
+              <span class="label-text-alt text-error"> Date is required. </span>
+            </label>
+          }
+        </div>
+        <!-- #endregion -->
+
+        <!-- #region Empty-->
+        <div class="col-span-1"></div>
+        <!-- #endregion -->
+
+        <!-- #region Morning In-->
+        <div>
+          <label class="label">
+            <span class="label-text">Morning In</span>
+            <div
+              class="badge badge-sm badge-outline badge-success font-mono font-bold uppercase"
+            >
+              entry
+            </div>
+          </label>
+          <input
+            type="time"
+            formControlName="time1"
+            class="input input-bordered w-full"
+            [class.input-error]="
+              time1.invalid && (time1.dirty || time1.touched)
+            "
+          />
+          @if (time1.touched && time1.invalid) {
+            <label class="label pb-0">
+              <span class="label-text-alt text-error">
+                Morning In is required.
+              </span>
+            </label>
+          }
+        </div>
+        <!-- #endregion -->
+
+        <!-- #region Morning Out-->
+        <div>
+          <label class="label">
+            <span class="label-text">Morning Out</span>
+            <div
+              class="badge badge-sm badge-outline badge-error font-mono font-bold uppercase"
+            >
+              exit
+            </div>
+          </label>
+          <input
+            type="time"
+            formControlName="time2"
+            class="input input-bordered w-full"
+            [class.input-error]="
+              time2.invalid && (time2.dirty || time2.touched)
+            "
+          />
+          @if (time2.touched && time2.invalid) {
+            <label class="label pb-0">
+              <span class="label-text-alt text-error">
+                Morning Out is required.
+              </span>
+            </label>
+          }
+        </div>
+        <!-- #endregion -->
+
+        <!-- #region Afternoon In -->
+        <div>
+          <label class="label">
+            <span class="label-text">Afternoon In </span>
+            <div
+              class="badge badge-sm badge-outline badge-success font-mono font-bold uppercase"
+            >
+              entry
+            </div>
+          </label>
+          <input
+            type="time"
+            formControlName="time3"
+            class="input input-bordered w-full"
+            [class.input-error]="
+              time3.invalid && (time3.dirty || time3.touched)
+            "
+          />
+          @if (time3.touched && time3.invalid) {
+            <label class="label pb-0">
+              <span class="label-text-alt text-error">
+                Afternoon In is required.
+              </span>
+            </label>
+          }
+        </div>
+        <!-- #endregion -->
+
+        <!-- #region Afternoon Out -->
+        <div>
+          <label class="label">
+            <span class="label-text">Afternoon Out</span>
+            <div
+              class="badge badge-sm badge-outline badge-error font-mono font-bold uppercase"
+            >
+              exit
+            </div>
+          </label>
+          <input
+            type="time"
+            formControlName="time4"
+            class="input input-bordered w-full"
+            [class.input-error]="
+              time4.invalid && (time4.dirty || time4.touched)
+            "
+          />
+          @if (time4.touched && time4.invalid) {
+            <label class="label pb-0">
+              <span class="label-text-alt text-error">
+                Afternoon Out is required.
+              </span>
+            </label>
+          }
+        </div>
+        <!-- #endregion -->
+
+        <!-- #region Note -->
+        <div class="col-span-2">
+          <label class="label">
+            <span class="label-text">Note</span>
+          </label>
+          <textarea
+            formControlName="note"
+            class="textarea textarea-bordered w-full"
+            placeholder="Insert notes (optional)"
+          ></textarea>
+        </div>
+        <!-- #endregion -->
+      </div>
+
+      <!-- #region Buttons -->
+      <div class="modal-action">
+        <button
+          type="button"
+          class="btn btn-ghost"
+          [disabled]="formGroup.invalid"
+          (click)="close()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="formGroup.invalid"
+        >
+          @if (submitting()) {
+            <span class="loading loading-spinner"></span>
+          }
+          Save
+        </button>
+      </div>
+      <!-- #endregion -->
+    </form>
+  </div>
+</dialog>
