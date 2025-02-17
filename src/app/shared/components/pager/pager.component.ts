@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -10,7 +9,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'shared-pager',
-  imports: [FormsModule, NgClass],
+  imports: [FormsModule],
   templateUrl: './pager.component.html',
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,

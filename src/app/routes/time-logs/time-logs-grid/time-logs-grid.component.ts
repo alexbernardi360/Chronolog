@@ -9,9 +9,10 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { PagerComponent } from '../../../shared/pager/pager.component';
-import { QuickInsertDialogComponent } from '../../../shared/quick-insert-dialog/quick-insert-dialog.component';
+import { PagerComponent } from '../../../shared/components/pager/pager.component';
+import { QuickInsertDialogComponent } from '../../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
+import { EntryTypeBadgeComponent } from '../../../shared/components/entry-type-badge/entry-type-badge.component';
 
 @Component({
   imports: [
@@ -20,6 +21,7 @@ import { TimeLogsService } from '../../../shared/services/time-logs.service';
     RouterLink,
     DialogModule,
     PagerComponent,
+    EntryTypeBadgeComponent,
   ],
   templateUrl: './time-logs-grid.component.html',
   styles: [],

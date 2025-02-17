@@ -15,7 +15,7 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { toLocalDateString } from '../../../shared/domain/date-time.utils';
-import { TimeLog } from '../../../shared/domain/time_log.interface';
+import { EntryType, TimeLog } from '../../../shared/domain/time_log.interface';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
 
 @Component({
@@ -38,7 +38,7 @@ export class TimeLogsFormComponent implements OnInit {
     timestamp: new FormControl<string | null>(toLocalDateString(new Date()), [
       Validators.required,
     ]),
-    type: new FormControl<'entry' | 'exit' | null>(null, [Validators.required]),
+    type: new FormControl<EntryType | null>(null, [Validators.required]),
     note: new FormControl<string | null>(null),
   });
 

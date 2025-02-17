@@ -15,13 +15,14 @@ import {
   getTodayAtTime,
   toLocalDateOnlyString,
   toLocalTimeString,
-} from '../domain/date-time.utils';
-import { TimeLogsService } from '../services/time-logs.service';
-import { TimeLog } from '../domain/time_log.interface';
+} from '../../domain/date-time.utils';
+import { TimeLogsService } from '../../services/time-logs.service';
+import { TimeLog } from '../../domain/time_log.interface';
 import { finalize } from 'rxjs';
+import { EntryTypeBadgeComponent } from '../../components/entry-type-badge/entry-type-badge.component';
 
 @Component({
-  imports: [DialogModule, ReactiveFormsModule],
+  imports: [DialogModule, ReactiveFormsModule, EntryTypeBadgeComponent],
   templateUrl: './quick-insert-dialog.component.html',
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
