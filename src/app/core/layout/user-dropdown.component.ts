@@ -16,7 +16,7 @@ import { AuthService } from '../../shared/services/auth.service';
       <div
         tabindex="0"
         role="button"
-        class="btn btn-ghost btn-circle avatar placeholder"
+        class="btn btn-ghost btn-circle avatar avatar-placeholder"
       >
         <div class="bg-neutral text-neutral-content w-10 rounded-full">
           <span>{{ avatarPlaceholder() }}</span>
@@ -25,10 +25,10 @@ import { AuthService } from '../../shared/services/auth.service';
 
       <ul
         tabindex="0"
-        class="menu menu-sm dropdown-content bg-base-200 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+        class="menu menu-sm dropdown-content bg-base-300 rounded-box z-1 mt-3 w-52 p-2 shadow-sm"
       >
-        <li class="disabled"><a>Profile (WIP)</a></li>
-        <li class="disabled"><a>Settings (WIP)</a></li>
+        <li class="menu-disabled"><a>Profile (WIP)</a></li>
+        <li class="menu-disabled"><a>Settings (WIP)</a></li>
         <li>
           <a
             class="text-error hover:bg-error hover:text-error-content"

@@ -11,15 +11,15 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { finalize } from 'rxjs';
+import { EntryTypeBadgeComponent } from '../../components/entry-type-badge/entry-type-badge.component';
 import {
   getTodayAtTime,
   toLocalDateOnlyString,
   toLocalTimeString,
 } from '../../domain/date-time.utils';
-import { TimeLogsService } from '../../services/time-logs.service';
 import { TimeLog } from '../../domain/time_log.interface';
-import { finalize } from 'rxjs';
-import { EntryTypeBadgeComponent } from '../../components/entry-type-badge/entry-type-badge.component';
+import { TimeLogsService } from '../../services/time-logs.service';
 
 @Component({
   imports: [DialogModule, ReactiveFormsModule, EntryTypeBadgeComponent],
@@ -28,7 +28,9 @@ import { EntryTypeBadgeComponent } from '../../components/entry-type-badge/entry
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuickInsertDialogComponent {
-  private readonly dialogRef = inject(DialogRef<boolean, QuickInsertDialogComponent>);
+  private readonly dialogRef = inject(
+    DialogRef<boolean, QuickInsertDialogComponent>,
+  );
   private readonly timeLogsService = inject(TimeLogsService);
 
   readonly submitting = signal(false);

@@ -18,7 +18,6 @@ import { filter } from 'rxjs';
 @Component({
   imports: [
     DatePipe,
-    NgClass,
     RouterLink,
     DialogModule,
     PagerComponent,
@@ -84,11 +83,9 @@ export class TimeLogsGridComponent {
   openQuickInsertDialog() {
     const dialogRef = this.dialog.open<boolean>(QuickInsertDialogComponent);
 
-    dialogRef.closed
-      .pipe(filter((result) => result === true))
-      .subscribe(() => {
-        this.totalRowsResource.reload();
-        this.timeLogsResource.reload();
-      });
+    dialogRef.closed.pipe(filter((result) => result === true)).subscribe(() => {
+      this.totalRowsResource.reload();
+      this.timeLogsResource.reload();
+    });
   }
 }
