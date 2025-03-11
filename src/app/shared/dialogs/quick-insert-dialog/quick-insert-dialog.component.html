@@ -4,14 +4,12 @@
     <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
       <div class="grid grid-cols-2 gap-4 pt-4">
         <!-- #region Date -->
-        <div>
-          <label class="label">
-            <span class="label-text">Date</span>
-          </label>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Date</legend>
           <input
             type="date"
             formControlName="date"
-            class="input input-bordered w-full"
+            class="input w-full"
             [class.input-error]="date.invalid && (date.dirty || date.touched)"
           />
           @if (date.touched && date.invalid) {
@@ -19,7 +17,7 @@
               <span class="label-text-alt text-error"> Date is required. </span>
             </label>
           }
-        </div>
+        </fieldset>
         <!-- #endregion -->
 
         <!-- #region Empty-->
@@ -27,11 +25,13 @@
         <!-- #endregion -->
 
         <!-- #region Morning In-->
-        <div>
-          <label class="label">
-            <span class="label-text">Morning In</span>
-            <shared-entry-type-badge type="entry"/>
-          </label>
+        <fieldset class="fieldset">
+          <div class="flex justify-between">
+            <legend class="fieldset-legend">Morning In</legend>
+            <legend class="fieldset-label">
+              <shared-entry-type-badge type="entry" />
+            </legend>
+          </div>
           <input
             type="time"
             formControlName="time1"
@@ -47,19 +47,21 @@
               </span>
             </label>
           }
-        </div>
+        </fieldset>
         <!-- #endregion -->
 
         <!-- #region Morning Out-->
-        <div>
-          <label class="label">
-            <span class="label-text">Morning Out</span>
-            <shared-entry-type-badge type="exit"/>
-          </label>
+        <fieldset class="fieldset">
+          <div class="flex justify-between">
+            <legend class="fieldset-legend">Morning Out</legend>
+            <legend class="fieldset-label">
+              <shared-entry-type-badge type="exit" />
+            </legend>
+          </div>
           <input
             type="time"
             formControlName="time2"
-            class="input input-bordered w-full"
+            class="input w-full"
             [class.input-error]="
               time2.invalid && (time2.dirty || time2.touched)
             "
@@ -71,19 +73,21 @@
               </span>
             </label>
           }
-        </div>
+        </fieldset>
         <!-- #endregion -->
 
         <!-- #region Afternoon In -->
-        <div>
-          <label class="label">
-            <span class="label-text">Afternoon In </span>
-            <shared-entry-type-badge type="entry"/>
-          </label>
+        <fieldset class="fieldset">
+          <div class="flex justify-between">
+            <legend class="fieldset-legend">Afternoon In</legend>
+            <legend class="fieldset-label">
+              <shared-entry-type-badge type="entry" />
+            </legend>
+          </div>
           <input
             type="time"
             formControlName="time3"
-            class="input input-bordered w-full"
+            class="input w-full"
             [class.input-error]="
               time3.invalid && (time3.dirty || time3.touched)
             "
@@ -95,19 +99,21 @@
               </span>
             </label>
           }
-        </div>
+        </fieldset>
         <!-- #endregion -->
 
         <!-- #region Afternoon Out -->
-        <div>
-          <label class="label">
-            <span class="label-text">Afternoon Out</span>
-            <shared-entry-type-badge type="exit"/>
-          </label>
+        <fieldset class="fieldset">
+          <div class="flex justify-between">
+            <legend class="fieldset-legend">Afternoon Out</legend>
+            <legend class="fieldset-label">
+              <shared-entry-type-badge type="exit" />
+            </legend>
+          </div>
           <input
             type="time"
             formControlName="time4"
-            class="input input-bordered w-full"
+            class="input w-full"
             [class.input-error]="
               time4.invalid && (time4.dirty || time4.touched)
             "
@@ -119,20 +125,18 @@
               </span>
             </label>
           }
-        </div>
+        </fieldset>
         <!-- #endregion -->
 
         <!-- #region Note -->
-        <div class="col-span-2">
-          <label class="label">
-            <span class="label-text">Note</span>
-          </label>
+        <fieldset class="fieldset col-span-2">
+          <legend class="fieldset-legend">Note</legend>
           <textarea
             formControlName="note"
-            class="textarea textarea-bordered w-full"
+            class="textarea w-full"
             placeholder="Insert notes (optional)"
           ></textarea>
-        </div>
+        </fieldset>
         <!-- #endregion -->
       </div>
 

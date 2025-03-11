@@ -6,7 +6,7 @@ import { EntryType } from '../../domain/time_log.interface';
   imports: [],
   template: `
     <div
-      class="badge badge-sm badge-outline font-mono font-bold uppercase"
+      class="badge badge-soft badge-xs font-mono font-bold uppercase"
       [class.badge-success]="isEntry()"
       [class.badge-error]="isExit()"
     >

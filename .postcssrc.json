@@ -1,0 +1,15 @@
+{
+  "plugins": {
+    "@tailwindcss/postcss": {
+      "safelist": [
+        "badge-success",
+        "badge-error",
+        "btn-primary",
+        "btn-disabled",
+        "input-error",
+        "w-10",
+        "w-12"
+      ]
+    }
+  }
+}

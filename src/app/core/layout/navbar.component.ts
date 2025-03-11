@@ -7,22 +7,20 @@ import { UserDropdownComponent } from './user-dropdown.component';
   selector: 'core-navbar',
   imports: [RouterLink, ThemeSelectorComponent, UserDropdownComponent],
   template: `
-    <div class="navbar sticky top-0 bg-base-100 z-10 shadow-md ">
+    <div class="navbar sticky top-0 bg-base-100 z-10 shadow-sm">
       <div class="flex-1">
         <a class="btn btn-ghost normal-case text-xl" routerLink="/">
           <div class="inline-flex text-lg md:text-2xl font-mono">Chronolog</div>
         </a>
       </div>
 
-      <div class="flex-none gap-2">
-        <div class="flex-none items-center">
-          <a
-            class="btn btn-ghost drawer-button font-normal"
-            routerLink="/time-logs"
-          >
-            Time Logs
-          </a>
-        </div>
+      <div class="flex items-center gap-2">
+        <a
+          class="btn btn-ghost font-normal"
+          routerLink="/time-logs"
+        >
+          Time Logs
+        </a>
 
         <core-theme-selector />
         <core-user-dropdown />
