@@ -1,4 +1,4 @@
-<div class="card w-full bg-base-100 shadow-xl">
+<div class="card w-full bg-base-100 shadow-sm">
   <div class="card-body">
     <div class="card-title justify-between text-xl font-semibold">
       Time Logs
@@ -16,7 +16,7 @@
     <div class="divider my-2"></div>
 
     <div class="overflow-x-auto">
-      <table class="table table-xs table-pin-cols table-fixed w-full">
+      <table class="table table-xs table-fixed w-full">
         <thead>
           <tr>
             <td class="w-[80px]">Date</td>
@@ -42,7 +42,8 @@
                 <td>
                   <div
                     class="skeleton h-6"
-                    [ngClass]="getRandomWidth(0, 10) < 5 ? 'w-10' : 'w-12'"
+                    [class.w-10]="getRandomWidth(0, 10) < 5"
+                    [class.w-12]="getRandomWidth(0, 10) >= 5"
                   ></div>
                 </td>
                 <td>

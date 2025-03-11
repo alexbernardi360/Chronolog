@@ -1,4 +1,4 @@
-<div class="card w-full bg-base-100 shadow-xl">
+<div class="card w-full bg-base-100 shadow-sm">
   <div class="card-body">
     <div class="card-title text-xl font-semibold">
       {{ isNew() ? "Add New" : "Edit" }} Time Log
@@ -6,20 +6,14 @@
 
     <div class="divider my-2"></div>
 
-    <form
-      [formGroup]="formGroup"
-      (ngSubmit)="onSubmit()"
-      class="form-control space-y-4"
-    >
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="space-y-4">
       <!-- #region Timestamp -->
-      <div>
-        <label class="label">
-          <span class="label-text">Timestamp</span>
-        </label>
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Timestamp</legend>
         <input
           type="datetime-local"
           formControlName="timestamp"
-          class="input input-bordered w-full"
+          class="input w-full"
           [class.input-error]="
             timestamp.invalid && (timestamp.dirty || timestamp.touched)
           "
@@ -31,17 +25,15 @@
             </span>
           </label>
         }
-      </div>
+      </fieldset>
       <!-- #endregion -->
 
       <!--#region Type-->
-      <div>
-        <label class="label">
-          <span class="label-text">Type</span>
-        </label>
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Type</legend>
         <select
           formControlName="type"
-          class="select select-bordered w-full"
+          class="select w-full"
           [class.input-error]="type.invalid && (type.dirty || type.touched)"
         >
           <option value="" disabled>Select the type</option>
@@ -53,20 +45,18 @@
             <span class="label-text-alt text-error"> Type is required. </span>
           </label>
         }
-      </div>
+      </fieldset>
       <!-- #endregion -->
 
       <!-- #region Note -->
-      <div>
-        <label class="label">
-          <span class="label-text">Note</span>
-        </label>
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Note</legend>
         <textarea
           formControlName="note"
-          class="textarea textarea-bordered w-full"
+          class="textarea w-full"
           placeholder="Insert notes (optional)"
         ></textarea>
-      </div>
+      </fieldset>
       <!-- #endregion -->
 
       <!-- #region Buttons -->
