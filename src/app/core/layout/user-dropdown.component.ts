@@ -25,7 +25,7 @@ import { AuthService } from '../../shared/services/auth.service';
 
       <ul
         tabindex="0"
-        class="menu menu-sm dropdown-content bg-base-300 rounded-box z-1 mt-3 w-52 p-2 shadow-sm"
+        class="menu menu-sm dropdown-content bg-base-300 shadow rounded-box z-1 mt-3 w-52 p-2"
       >
         <li class="menu-disabled"><a>Profile (WIP)</a></li>
         <li class="menu-disabled"><a>Settings (WIP)</a></li>
