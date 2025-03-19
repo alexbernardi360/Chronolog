@@ -17,12 +17,16 @@ import { UserDropdownComponent } from './user-dropdown.component';
           </a>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center">
+          <a class="btn btn-ghost font-normal" routerLink="/daily-works">
+            Daily Works
+          </a>
+
           <a class="btn btn-ghost font-normal" routerLink="/time-logs">
             Time Logs
           </a>
 
-          <core-theme-selector />
+          <core-theme-selector class="ms-2 me-4" />
           <core-user-dropdown />
         </div>
       </div>

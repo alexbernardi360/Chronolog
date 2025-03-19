@@ -8,7 +8,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./core/layout/main-layout.component').then(
-        (m) => m.MainLayoutComponent
+        (m) => m.MainLayoutComponent,
       ),
     children: [
       {
@@ -47,6 +47,13 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'daily-works',
+        loadComponent: () =>
+          import('./routes/daily-works/daily-works.component').then(
+            (m) => m.DailyWorksComponent,
+          ),
+      },
 
       // #region Errors
       {
@@ -56,7 +63,7 @@ export const routes: Routes = [
             path: '404',
             loadComponent: () =>
               import('./routes/errors/not-found.component').then(
-                (c) => c.NotFoundComponent
+                (c) => c.NotFoundComponent,
               ),
           },
         ],
@@ -71,7 +78,7 @@ export const routes: Routes = [
     canActivate: [unauthGuard],
     loadComponent: () =>
       import('./routes/auth/login/login.component').then(
-        (m) => m.LoginComponent
+        (m) => m.LoginComponent,
       ),
   },
   // #endregion

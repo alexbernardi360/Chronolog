@@ -8,26 +8,20 @@ import {
   signal,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
-import { EntryTypeBadgeComponent } from '../../../shared/components/entry-type-badge/entry-type-badge.component';
-import { PagerComponent } from '../../../shared/components/pager/pager.component';
-import { QuickInsertDialogComponent } from '../../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
-import { TimeLogsService } from '../../../shared/services/time-logs.service';
+import { PagerComponent } from '../../shared/components/pager/pager.component';
+import { QuickInsertDialogComponent } from '../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
+import { DailyWorksService } from '../../shared/services/daily-works.service';
+import { TimeLogsService } from '../../shared/services/time-logs.service';
 
 @Component({
-  imports: [
-    DatePipe,
-    RouterLink,
-    DialogModule,
-    PagerComponent,
-    EntryTypeBadgeComponent,
-  ],
-  templateUrl: './time-logs-grid.component.html',
+  imports: [DatePipe, DialogModule, PagerComponent],
+  templateUrl: './daily-works.component.html',
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimeLogsGridComponent {
+export class DailyWorksComponent {
+  private readonly dailyWorksService = inject(DailyWorksService);
   private readonly timeLogsService = inject(TimeLogsService);
   private readonly dialog = inject(Dialog);
 
@@ -35,16 +29,16 @@ export class TimeLogsGridComponent {
   readonly currentPageSize = signal<number>(10);
 
   readonly totalRowsResource = rxResource({
-    loader: () => this.timeLogsService.getTimeLogsCount(),
+    loader: () => this.dailyWorksService.getDailyWorksCount(),
   });
 
-  readonly timeLogsResource = rxResource({
+  readonly dailyWorksResource = rxResource({
     request: () => ({
       currentPage: this.currentPage(),
       currentPageSize: this.currentPageSize(),
     }),
     loader: (params) =>
-      this.timeLogsService.getTimeLogs(
+      this.dailyWorksService.getDailyWorks(
         params.request.currentPageSize,
         params.request.currentPage,
       ),
@@ -66,26 +60,22 @@ export class TimeLogsGridComponent {
       .map((_x, i) => i);
   });
 
-  deleteRow(id: string) {
-    this.timeLogsService.deleteTimeLog(id).subscribe({
-      next: () => {
-        this.totalRowsResource.reload();
-        this.timeLogsResource.reload();
-      },
-      error: (error) => console.error('Errore:', error),
-    });
-  }
-
-  getRandomWidth(minWidth: number, maxWidth: number) {
-    return Math.random() * (maxWidth - minWidth + 1) + minWidth;
-  }
-
   openQuickInsertDialog() {
     const dialogRef = this.dialog.open<boolean>(QuickInsertDialogComponent);
 
     dialogRef.closed.pipe(filter((result) => result === true)).subscribe(() => {
       this.totalRowsResource.reload();
-      this.timeLogsResource.reload();
+      this.dailyWorksResource.reload();
+    });
+  }
+
+  deleteRow(day: string) {
+    this.timeLogsService.deleteTimeLogsByDate(day).subscribe({
+      next: () => {
+        this.totalRowsResource.reload();
+        this.dailyWorksResource.reload();
+      },
+      error: (error) => console.error('Errore:', error),
     });
   }
 }
