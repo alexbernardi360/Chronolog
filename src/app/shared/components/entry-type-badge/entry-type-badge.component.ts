@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { EntryType } from '../../domain/time_log.interface';
+import { EntryType } from '../../domain/time-log.interface';
 
 @Component({
   selector: 'shared-entry-type-badge',

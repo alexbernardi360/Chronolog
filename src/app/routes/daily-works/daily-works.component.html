@@ -1,0 +1,98 @@
+<div class="card bg-base-100 shadow">
+  <div class="card-body">
+    <div class="card-title justify-between text-xl font-semibold">
+      Daily Works
+      <div>
+        <button
+          class="btn btn-sm btn-primary mr-2"
+          (click)="openQuickInsertDialog()"
+        >
+          Quick Insert
+        </button>
+        <!-- <a class="btn btn-sm btn-primary" routerLink="./new">Add New</a> -->
+      </div>
+    </div>
+
+    <!-- <div class="divider my-2"></div> -->
+
+    <div class="overflow-x-auto">
+      <table class="table table-sm table-fixed w-full">
+        <thead>
+          <tr>
+            <td >Day</td>
+            <td >Total hours</td>
+            <td >Status</td>
+            <th ></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @if (dailyWorksResource.isLoading()) {
+            @for (row of loadingRows(); track row) {
+              <tr>
+                <td>
+                  <div class="skeleton h-6 w-16"></div>
+                </td>
+                <td>
+                  <div class="skeleton h-6 w-10"></div>
+                </td>
+                <td>
+                  <div class="skeleton h-6 w-6"></div>
+                </td>
+              </tr>
+            }
+          } @else {
+            @for (item of dailyWorksResource.value(); track item.day) {
+              <tr class="hover:bg-base-200">
+                <td class="whitespace-nowrap">
+                  {{ item.day | date: "dd/MM/yyyy" }}
+                </td>
+                <td class="whitespace-nowrap">
+                  {{ item.total_hours }}
+                </td>
+                <td class="whitespace-nowrap">
+                  <div
+                    class="badge badge-soft badge-xs font-mono font-bold uppercase"
+                    [class.badge-success]="item.is_valid"
+                    [class.badge-warning]="!item.is_valid"
+                  >
+                    {{ item.is_valid ? "No issues" : "Check time logs" }}
+                  </div>
+                </td>
+                <th>
+                  <div class="flex justify-end">
+                    <button
+                      type="button"
+                      class="btn btn-xs btn-ghost text-error hover:bg-error hover:text-error-content"
+                      (click)="deleteRow(item.day)"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 fill-current"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <path
+                          d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </th>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalRowsResource.value() != null) {
+      <shared-pager
+        [totalRows]="totalRowsResource.value()!"
+        [pageSize]="currentPageSize()"
+        [(currentPage)]="currentPage"
+        class="mt-4"
+      />
+    }
+  </div>
+</div>

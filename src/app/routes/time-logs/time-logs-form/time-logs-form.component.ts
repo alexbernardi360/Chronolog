@@ -15,7 +15,7 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { toLocalDateString } from '../../../shared/domain/date-time.utils';
-import { EntryType, TimeLog } from '../../../shared/domain/time_log.interface';
+import { EntryType, TimeLog } from '../../../shared/domain/time-log.interface';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
 
 @Component({

@@ -4,6 +4,7 @@
       "safelist": [
         "badge-success",
         "badge-error",
+        "badge-warning",
         "btn-primary",
         "btn-disabled",
         "input-error",
