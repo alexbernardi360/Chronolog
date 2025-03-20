@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createClient } from '@supabase/supabase-js';
 import { catchError, from, map, of } from 'rxjs';
-import { TimeLog } from '../domain/time_log.interface';
+import { TimeLog } from '../domain/time-log.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -110,6 +110,43 @@ export class TimeLogsService {
 
   deleteTimeLog(id: string) {
     const request = this.supabase.from('time_records').delete().eq('id', id);
+
+    return from(request).pipe(
+      map((result) => {
+        if (result.error) throw result.error;
+      }),
+      catchError((error) => {
+        console.error('Error deleting time record:', error);
+        return of();
+      }),
+    );
+  }
+
+  deleteTimeLogsByDate(day: string) {
+    // Validation: check that the date is in the correct format YYYY-MM-DD
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+      throw new Error('The date format must be YYYY-MM-DD.');
+    }
+
+    // Try to create a Date object to check if it's a valid date
+    const startOfDay = new Date(day);
+    if (isNaN(startOfDay.getTime())) {
+      throw new Error('Invalid date.');
+    }
+
+    // Calculate the next day
+    const nextDay = new Date(startOfDay);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    // Convert the dates to ISO strings (only YYYY-MM-DD part)
+    const startOfDayStr = day + 'T00:00:00.000';
+    const nextDayStr = nextDay.toISOString().split('T')[0] + 'T00:00:00.000';
+
+    const request = this.supabase
+      .from('time_records')
+      .delete()
+      .gte('timestamp', startOfDayStr)
+      .lt('timestamp', nextDayStr);
 
     return from(request).pipe(
       map((result) => {

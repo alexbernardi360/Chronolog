@@ -18,7 +18,7 @@ import {
   toLocalDateOnlyString,
   toLocalTimeString,
 } from '../../domain/date-time.utils';
-import { TimeLog } from '../../domain/time_log.interface';
+import { TimeLog } from '../../domain/time-log.interface';
 import { TimeLogsService } from '../../services/time-logs.service';
 
 @Component({
