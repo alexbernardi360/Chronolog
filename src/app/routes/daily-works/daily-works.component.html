@@ -19,10 +19,10 @@
       <table class="table table-sm table-fixed w-full">
         <thead>
           <tr>
-            <td class="w-[80px]">Day</td>
-            <td class="w-[60px]">Total hours</td>
-            <td class="w-[80px]">Is Valid</td>
-            <th class="w-[80px]"></th>
+            <td >Day</td>
+            <td >Total hours</td>
+            <td >Status</td>
+            <th ></th>
           </tr>
         </thead>
 
@@ -51,7 +51,13 @@
                   {{ item.total_hours }}
                 </td>
                 <td class="whitespace-nowrap">
-                  {{ item.is_valid }}
+                  <div
+                    class="badge badge-soft badge-xs font-mono font-bold uppercase"
+                    [class.badge-success]="item.is_valid"
+                    [class.badge-warning]="!item.is_valid"
+                  >
+                    {{ item.is_valid ? "No issues" : "Check time logs" }}
+                  </div>
                 </td>
                 <th>
                   <div class="flex justify-end">
@@ -59,7 +65,7 @@
                       type="button"
                       class="btn btn-xs btn-ghost text-error hover:bg-error hover:text-error-content"
                       (click)="deleteRow(item.day)"
-                      >
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         class="h-4 w-4 fill-current"
