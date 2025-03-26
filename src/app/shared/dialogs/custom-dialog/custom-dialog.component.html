@@ -1,0 +1,28 @@
+<dialog class="modal modal-bottom sm:modal-middle modal-open">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">{{ title }}</h3>
+
+    <p class="py-4">{{ message }}</p>
+
+    <form method="dialog" class="modal-action">
+      @if (showCancelButton) {
+        <button type="button" class="btn btn-ghost" (click)="cancel()">
+          {{ cancelButtonText }}
+        </button>
+      }
+
+      <button
+        type="submit"
+        class="btn"
+        [class.btn-primary]="confirmButtonType === 'primary'"
+        [class.btn-success]="confirmButtonType === 'success'"
+        [class.btn-warning]="confirmButtonType === 'warning'"
+        [class.btn-error]="confirmButtonType === 'error'"
+        (click)="confirm()"
+        cdkFocusInitial
+      >
+        {{ confirmButtonText }}
+      </button>
+    </form>
+  </div>
+</dialog>
