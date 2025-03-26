@@ -3,9 +3,12 @@
     "@tailwindcss/postcss": {
       "safelist": [
         "badge-success",
-        "badge-error",
         "badge-warning",
+        "badge-error",
         "btn-primary",
+        "btn-success",
+        "btn-warning",
+        "btn-error",
         "btn-disabled",
         "input-error",
         "w-10",
