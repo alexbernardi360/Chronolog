@@ -14,6 +14,7 @@ import { EntryTypeBadgeComponent } from '../../../shared/components/entry-type-b
 import { PagerComponent } from '../../../shared/components/pager/pager.component';
 import { QuickInsertDialogComponent } from '../../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
+import { CustomDialogService } from '../../../shared/services/custom-dialog.service';
 
 @Component({
   imports: [
@@ -30,6 +31,7 @@ import { TimeLogsService } from '../../../shared/services/time-logs.service';
 export class TimeLogsGridComponent {
   private readonly timeLogsService = inject(TimeLogsService);
   private readonly dialog = inject(Dialog);
+  private readonly customDialogService = inject(CustomDialogService);
 
   readonly currentPage = signal<number>(1);
   readonly currentPageSize = signal<number>(10);
@@ -66,14 +68,24 @@ export class TimeLogsGridComponent {
       .map((_x, i) => i);
   });
 
-  deleteRow(id: string) {
-    this.timeLogsService.deleteTimeLog(id).subscribe({
-      next: () => {
-        this.totalRowsResource.reload();
-        this.timeLogsResource.reload();
-      },
-      error: (error) => console.error('Errore:', error),
-    });
+  async deleteRow(id: string) {
+    if (
+      await this.customDialogService.show({
+        title: 'Alert',
+        message: 'Are you sure you want to delete this row?',
+        showCancelButton: true,
+        confirmButtonType: 'error',
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+      })
+    )
+      this.timeLogsService.deleteTimeLog(id).subscribe({
+        next: () => {
+          this.totalRowsResource.reload();
+          this.timeLogsResource.reload();
+        },
+        error: (error) => console.error('Errore:', error),
+      });
   }
 
   getRandomWidth(minWidth: number, maxWidth: number) {
