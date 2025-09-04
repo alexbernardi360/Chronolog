@@ -13,8 +13,8 @@ import { filter } from 'rxjs';
 import { EntryTypeBadgeComponent } from '../../../shared/components/entry-type-badge/entry-type-badge.component';
 import { PagerComponent } from '../../../shared/components/pager/pager.component';
 import { QuickInsertDialogComponent } from '../../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
-import { TimeLogsService } from '../../../shared/services/time-logs.service';
 import { CustomDialogService } from '../../../shared/services/custom-dialog.service';
+import { TimeLogsService } from '../../../shared/services/time-logs.service';
 
 @Component({
   imports: [
@@ -37,18 +37,18 @@ export class TimeLogsGridComponent {
   readonly currentPageSize = signal<number>(10);
 
   readonly totalRowsResource = rxResource({
-    loader: () => this.timeLogsService.getTimeLogsCount(),
+    stream: () => this.timeLogsService.getTimeLogsCount(),
   });
 
   readonly timeLogsResource = rxResource({
-    request: () => ({
+    params: () => ({
       currentPage: this.currentPage(),
       currentPageSize: this.currentPageSize(),
     }),
-    loader: (params) =>
+    stream: ({ params }) =>
       this.timeLogsService.getTimeLogs(
-        params.request.currentPageSize,
-        params.request.currentPage,
+        params.currentPageSize,
+        params.currentPage,
       ),
   });
 
