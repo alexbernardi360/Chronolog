@@ -5,8 +5,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
-import { themeChange } from 'theme-change';
-import { getTheme } from '../../shared/domain/common.utils';
+import { getTheme, setTheme } from '../../shared/domain/common.utils';
 
 @Component({
   selector: 'core-theme-selector',
@@ -16,13 +15,11 @@ import { getTheme } from '../../shared/domain/common.utils';
       <!-- this hidden checkbox controls the state -->
       <input
         type="checkbox"
-        class="theme-controller"
-        data-toggle-theme="dark,light"
         [checked]="theme === 'light'"
-        (input)="setMetaThemeColor()"
+        (change)="toggleTheme()"
       />
 
-      <!-- sun icon -->
+      <!-- Sun icon -->
       <svg
         class="swap-on fill-current w-6 h-6"
         xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +30,7 @@ import { getTheme } from '../../shared/domain/common.utils';
         />
       </svg>
 
-      <!-- moon icon -->
+      <!-- Moon icon -->
       <svg
         class="swap-off fill-current w-6 h-6"
         xmlns="http://www.w3.org/2000/svg"
@@ -54,15 +51,25 @@ export class ThemeSelectorComponent implements OnInit {
   theme = getTheme();
 
   ngOnInit() {
-    themeChange(false);
-
-    this.setMetaThemeColor();
+    this.applyTheme(this.theme);
   }
 
-  setMetaThemeColor() {
-    const elem = document.documentElement;
-    const color = getComputedStyle(elem).getPropertyValue('--b1');
+  toggleTheme() {
+    this.theme = this.theme === 'light' ? 'dark' : 'light';
+    this.applyTheme(this.theme);
+  }
 
-    this.meta.updateTag({ content: `oklch(${color})` }, 'name=theme-color');
+  private applyTheme(theme: 'light' | 'dark') {
+    // Aggiorna data-theme su <html> per daisyUI
+    document.documentElement.setAttribute('data-theme', theme);
+
+    // Salva tema in localStorage
+    setTheme(theme);
+
+    // Aggiorna meta tag theme-color
+    const color = getComputedStyle(document.documentElement).getPropertyValue(
+      '--b1',
+    );
+    this.meta.updateTag({ name: 'theme-color', content: `oklch(${color})` });
   }
 }

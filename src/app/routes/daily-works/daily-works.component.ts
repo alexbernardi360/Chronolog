@@ -8,13 +8,12 @@ import {
   signal,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { filter, firstValueFrom, map } from 'rxjs';
+import { filter } from 'rxjs';
 import { PagerComponent } from '../../shared/components/pager/pager.component';
 import { QuickInsertDialogComponent } from '../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
+import { CustomDialogService } from '../../shared/services/custom-dialog.service';
 import { DailyWorksService } from '../../shared/services/daily-works.service';
 import { TimeLogsService } from '../../shared/services/time-logs.service';
-import { CustomDialogComponent } from '../../shared/dialogs/custom-dialog/custom-dialog.component';
-import { CustomDialogService } from '../../shared/services/custom-dialog.service';
 
 @Component({
   imports: [DatePipe, DialogModule, PagerComponent],
@@ -32,18 +31,18 @@ export class DailyWorksComponent {
   readonly currentPageSize = signal<number>(10);
 
   readonly totalRowsResource = rxResource({
-    loader: () => this.dailyWorksService.getDailyWorksCount(),
+    stream: () => this.dailyWorksService.getDailyWorksCount(),
   });
 
   readonly dailyWorksResource = rxResource({
-    request: () => ({
+    params: () => ({
       currentPage: this.currentPage(),
       currentPageSize: this.currentPageSize(),
     }),
-    loader: (params) =>
+    stream: ({ params }) =>
       this.dailyWorksService.getDailyWorks(
-        params.request.currentPageSize,
-        params.request.currentPage,
+        params.currentPageSize,
+        params.currentPage,
       ),
   });
 
