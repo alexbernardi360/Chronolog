@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ThemeSelectorComponent } from './theme-selector.component';
 import { UserDropdownComponent } from './user-dropdown.component';
@@ -33,6 +33,5 @@ import { UserDropdownComponent } from './user-dropdown.component';
     </div>
   `,
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {}

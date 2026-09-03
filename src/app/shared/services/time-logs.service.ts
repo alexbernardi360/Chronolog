@@ -2,14 +2,15 @@ import { Injectable } from '@angular/core';
 import { createClient } from '@supabase/supabase-js';
 import { catchError, from, map, of } from 'rxjs';
 import { TimeLog } from '../domain/time-log.interface';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TimeLogsService {
   private readonly supabase = createClient(
-    import.meta.env.NG_APP_SUPABASE_URL,
-    import.meta.env.NG_APP_SUPABASE_KEY,
+    environment.supabaseUrl,
+    environment.supabaseKey,
   );
 
   getTimeLogs(pageSize: number, currentPage: number) {

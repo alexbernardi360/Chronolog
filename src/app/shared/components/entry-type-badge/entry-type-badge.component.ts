@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { EntryType } from '../../domain/time-log.interface';
 
 @Component({
@@ -14,7 +14,6 @@ import { EntryType } from '../../domain/time-log.interface';
     </div>
   `,
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryTypeBadgeComponent {
   type = input.required<EntryType>();

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { getTheme, setTheme } from '../../shared/domain/common.utils';
 
@@ -43,7 +38,6 @@ import { getTheme, setTheme } from '../../shared/domain/common.utils';
     </label>
   `,
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThemeSelectorComponent implements OnInit {
   private readonly meta = inject(Meta);

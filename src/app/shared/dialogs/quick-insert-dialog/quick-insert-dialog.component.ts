@@ -1,10 +1,5 @@
 import { DialogModule, DialogRef } from '@angular/cdk/dialog';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -25,7 +20,6 @@ import { TimeLogsService } from '../../services/time-logs.service';
   imports: [DialogModule, ReactiveFormsModule, EntryTypeBadgeComponent],
   templateUrl: './quick-insert-dialog.component.html',
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuickInsertDialogComponent {
   private readonly dialogRef = inject(

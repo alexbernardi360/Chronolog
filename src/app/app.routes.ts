@@ -27,23 +27,23 @@ export const routes: Routes = [
           {
             path: '',
             loadComponent: () =>
-              import(
-                './routes/time-logs/time-logs-grid/time-logs-grid.component'
-              ).then((m) => m.TimeLogsGridComponent),
+              import('./routes/time-logs/time-logs-grid/time-logs-grid.component').then(
+                (m) => m.TimeLogsGridComponent,
+              ),
           },
           {
             path: 'new',
             loadComponent: () =>
-              import(
-                './routes/time-logs/time-logs-form/time-logs-form.component'
-              ).then((m) => m.TimeLogsFormComponent),
+              import('./routes/time-logs/time-logs-form/time-logs-form.component').then(
+                (m) => m.TimeLogsFormComponent,
+              ),
           },
           {
             path: 'edit/:id',
             loadComponent: () =>
-              import(
-                './routes/time-logs/time-logs-form/time-logs-form.component'
-              ).then((m) => m.TimeLogsFormComponent),
+              import('./routes/time-logs/time-logs-form/time-logs-form.component').then(
+                (m) => m.TimeLogsFormComponent,
+              ),
           },
         ],
       },

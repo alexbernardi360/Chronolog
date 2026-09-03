@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -18,7 +12,6 @@ import { AuthService } from '../../../shared/services/auth.service';
   imports: [ReactiveFormsModule],
   templateUrl: './login.component.html',
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   private auth = inject(AuthService);

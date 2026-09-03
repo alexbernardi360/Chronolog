@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -22,7 +15,6 @@ import { TimeLogsService } from '../../../shared/services/time-logs.service';
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './time-logs-form.component.html',
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeLogsFormComponent implements OnInit {
   private readonly timeLogsService = inject(TimeLogsService);

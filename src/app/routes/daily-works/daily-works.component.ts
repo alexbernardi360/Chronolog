@@ -1,12 +1,6 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 import { PagerComponent } from '../../shared/components/pager/pager.component';
@@ -19,7 +13,6 @@ import { TimeLogsService } from '../../shared/services/time-logs.service';
   imports: [DatePipe, DialogModule, PagerComponent],
   templateUrl: './daily-works.component.html',
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DailyWorksComponent {
   private readonly dailyWorksService = inject(DailyWorksService);
