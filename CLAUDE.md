@@ -32,9 +32,9 @@ The test build uses the `testing` configuration of the `build` target (`aot: fal
 
 ## Environment setup (required before the app runs)
 
-`src/environments/environment.ts` and `environment.prod.ts` are gitignored. Copy `src/environments/environment.template.ts` to `environment.ts` and fill in `supabaseUrl` / `supabaseKey`.
+`src/environments/environment.ts` is gitignored. Copy `src/environments/environment.template.ts` to `environment.ts` and fill in `supabaseUrl` / `supabaseKey`.
 
-`npm run build` uses the production configuration, whose `fileReplacements` swaps `environment.ts` → `environment.prod.ts`, so a local production build needs that file too. In CI, `.github/workflows/firebase-hosting-merge.yml` generates `environment.prod.ts` from the `SUPABASE_URL` / `SUPABASE_ANON_KEY` repo secrets before building.
+There is a single environment file for every configuration — no `fileReplacements`, no `environment.prod.ts`. Dev/prod behaviour comes from Angular's `isDevMode()` (see `app.config.ts`), not from a `production` flag. In CI, `.github/workflows/firebase-hosting-merge.yml` generates `environment.ts` from the `SUPABASE_URL` / `SUPABASE_ANON_KEY` repo secrets before building.
 
 Git history shows an earlier `@ngx-env/builder` setup reading `import.meta.env.NG_APP_*`; that is gone — configuration now flows only through the `environment` object.
 
