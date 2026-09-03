@@ -1,12 +1,6 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
@@ -26,7 +20,6 @@ import { TimeLogsService } from '../../../shared/services/time-logs.service';
   ],
   templateUrl: './time-logs-grid.component.html',
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeLogsGridComponent {
   private readonly timeLogsService = inject(TimeLogsService);

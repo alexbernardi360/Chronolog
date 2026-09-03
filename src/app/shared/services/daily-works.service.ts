@@ -2,14 +2,15 @@ import { Injectable } from '@angular/core';
 import { createClient } from '@supabase/supabase-js';
 import { catchError, from, map, of } from 'rxjs';
 import { WorkSummary as DailyWork } from '../domain/daily-work.interface';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DailyWorksService {
   private readonly supabase = createClient(
-    import.meta.env.NG_APP_SUPABASE_URL,
-    import.meta.env.NG_APP_SUPABASE_KEY,
+    environment.supabaseUrl,
+    environment.supabaseKey,
   );
 
   getDailyWorks(pageSize: number, currentPage: number) {

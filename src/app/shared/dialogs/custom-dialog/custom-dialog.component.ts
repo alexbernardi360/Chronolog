@@ -1,10 +1,5 @@
 import { DIALOG_DATA, DialogModule, DialogRef } from '@angular/cdk/dialog';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Inject,
-  inject,
-} from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 
 export interface CustomDialogData {
   title: string;
@@ -19,7 +14,6 @@ export interface CustomDialogData {
   imports: [DialogModule],
   templateUrl: './custom-dialog.component.html',
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomDialogComponent {
   private readonly dialogRef = inject(

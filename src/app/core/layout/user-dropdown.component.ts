@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../shared/services/auth.service';
 
@@ -41,7 +35,6 @@ import { AuthService } from '../../shared/services/auth.service';
     </div>
   `,
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserDropdownComponent implements OnInit {
   private auth = inject(AuthService);
