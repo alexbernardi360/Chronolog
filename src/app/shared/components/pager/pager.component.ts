@@ -64,7 +64,7 @@ export class PagerComponent {
   }
 
   previousPage() {
-    if (this.currentPage() <= 0) return;
+    if (this.currentPage() <= 1) return;
     this.currentPage.update((current) => current - 1);
   }
 

@@ -1,5 +1,5 @@
 export function getTheme(): 'light' | 'dark' {
-  return (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
+  return localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
 }
 
 export function setTheme(theme: 'light' | 'dark') {

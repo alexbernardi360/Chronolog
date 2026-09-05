@@ -24,11 +24,24 @@ Node **>= 22.22.3** is required (Angular 22 engines: `^22.22.3 || ^24.15.0 || >=
 
 ## Testing
 
-Unit tests run on the `@angular/build:unit-test` builder with the **Vitest** runner — migrated off Karma/Jasmine during the Angular 22 upgrade, since the Karma builder is deprecated. `jsdom` provides the DOM; pass `--browsers` to run in a real browser instead. Specs use Vitest globals (`describe`/`it`/`expect`) — `tsconfig.spec.json` sets `"types": ["vitest/globals"]`.
+Unit tests run on the `@angular/build:unit-test` builder with the **Vitest** runner — migrated off Karma/Jasmine during the Angular 22 upgrade, since the Karma builder is deprecated. `jsdom` provides the DOM; pass `--browsers` to run in a real browser instead.
 
-There are currently **no `.spec.ts` files** in the repo, and `ng test` therefore _fails_ with `No tests found matching the following patterns` until one exists — that error means "no specs", not a broken setup. The schematics in `angular.json` do not set `skipTests`, so `ng generate` emits a spec alongside new files by default.
+**Import `describe`/`it`/`expect`/`beforeEach`/`vi` explicitly from `vitest` in every spec.** The runner injects them as globals and `tsconfig.spec.json` declares them via `"types": ["vitest/globals"]`, so a spec without the import still _runs_ — but the root `tsconfig.json` has no `include`, so it swallows every `.ts` in the repo, and editors resolve spec files against it rather than `tsconfig.spec.json` (nothing references it). With no `@types/*` package to fall back on the way Jasmine had one, the editor then reports `Cannot find name 'describe'` on every spec. Explicit imports keep the specs correct in any editor.
+
+Every unit with logic has a sibling `.spec.ts`. Purely presentational components (`AppComponent`, `MainLayoutComponent`, `HomeComponent`, `NotFoundComponent`) have none — there is no behaviour the compiler doesn't already check. The schematics in `angular.json` do not set `skipTests`, so `ng generate` emits a spec alongside new files by default.
 
 The test build uses the `testing` configuration of the `build` target (`aot: false`, no optimization, zone.js testing polyfills).
+
+Four things about this environment bite when writing specs:
+
+- **`localStorage` does not exist** in the builder's jsdom (Node's experimental global shadows jsdom's and resolves to `undefined`). `setupFiles: ["src/test-setup.ts"]` in `angular.json` installs an in-memory `Storage` so `getTheme`/`setTheme` work. It defines the global unconditionally on purpose: merely _reading_ `globalThis.localStorage` to check for one trips Node's `ExperimentalWarning` in every worker.
+- **Never let a real `AuthService`/`TimeLogsService`/`DailyWorksService` be constructed** — their `createClient()` field initializer runs against the real `environment.ts`, and throws outright if it still holds the template placeholders. For component specs, override the provider with a stub. For the service specs themselves, use `serviceWithClient(TimeLogsService, supabase)` from `src/testing/supabase-stub.ts`, which builds the instance off the prototype so the field initializer never runs (`queryStub` in the same file fakes the chainable query builder).
+- **Do not use `vi.mock()`/`vi.hoisted()`.** The builder bundles each spec inside a `__commonJS("…spec.ts")` wrapper before Vitest parses it, so those calls are never at the top level of a module. Vitest warns "This will become an error in a future version" — the seam above avoids needing them at all.
+- **A `Dialog` stub must be provided on the component**, not in `TestBed` root: components importing `DialogModule` get its own `Dialog` provider in their standalone injector, which shadows the root one. Use `TestBed.overrideComponent(C, { add: { providers: [...] } })`.
+
+After changing a signal that a `rxResource` depends on, `fixture.detectChanges()` then `await fixture.whenStable()` — `whenStable()` alone does not trigger the refetch.
+
+One warning is expected and left in place: `Not implemented: HTMLFormElement's requestSubmit() method`, logged once by `custom-dialog.component.spec.ts` when it clicks the `type="submit"` confirm button. jsdom does not implement form submission; silencing it means either a no-op patch that hides the limitation, or a `requestSubmit` polyfill that dispatches `submit` — worth adding only if a spec ever needs to exercise `(ngSubmit)` rather than calling `onSubmit()` directly.
 
 ## Environment setup (required before the app runs)
 
