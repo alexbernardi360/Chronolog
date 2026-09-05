@@ -11,9 +11,16 @@ describe('UserDropdownComponent', () => {
   let fixture: ComponentFixture<UserDropdownComponent>;
   let dropdown: UserDropdownComponent;
 
-  const session = (email: string) => ({
+  const host = () => fixture.nativeElement as HTMLElement;
+
+  const session = (email: string | undefined) => ({
     data: { session: { user: { email } } },
   });
+
+  const logoutButton = () =>
+    Array.from(host().querySelectorAll('button')).find(
+      (b) => b.textContent!.trim() === 'Logout',
+    )!;
 
   async function render() {
     fixture = TestBed.createComponent(UserDropdownComponent);
@@ -41,9 +48,7 @@ describe('UserDropdownComponent', () => {
     await render();
 
     expect(dropdown.avatarPlaceholder()).toBe('A');
-    expect(
-      (fixture.nativeElement as HTMLElement).querySelector('span')!.textContent,
-    ).toBe('A');
+    expect(host().querySelector('span')!.textContent).toBe('A');
   });
 
   it('upper-cases an already lowercase initial from any address', async () => {
@@ -52,6 +57,33 @@ describe('UserDropdownComponent', () => {
     await render();
 
     expect(dropdown.avatarPlaceholder()).toBe('Z');
+  });
+
+  it('falls back to a placeholder when the session carries no email', async () => {
+    getSession.mockResolvedValue(session(undefined));
+
+    await render();
+
+    expect(dropdown.avatarPlaceholder()).toBe('?');
+    expect(host().querySelector('button')!.getAttribute('aria-label')).toBe(
+      'Account menu',
+    );
+  });
+
+  it('names the trigger after the signed-in address', async () => {
+    await render();
+
+    expect(host().querySelector('button')!.getAttribute('aria-label')).toBe(
+      'Account menu for alessandro@example.com',
+    );
+  });
+
+  it('shows the signed-in address in the menu', async () => {
+    await render();
+
+    expect(host().querySelector('#user-menu')!.textContent).toContain(
+      'alessandro@example.com',
+    );
   });
 
   it('signs out and then sends the user to the login page', async () => {
@@ -66,12 +98,12 @@ describe('UserDropdownComponent', () => {
     );
   });
 
-  it('logs out from the menu item', async () => {
+  it('logs out from a real button, so the keyboard reaches it', async () => {
     await render();
 
-    const logout = Array.from(
-      (fixture.nativeElement as HTMLElement).querySelectorAll('a'),
-    ).find((a) => a.textContent!.trim() === 'Logout')!;
+    const logout = logoutButton();
+    expect(logout.tagName).toBe('BUTTON');
+
     logout.click();
     await fixture.whenStable();
 

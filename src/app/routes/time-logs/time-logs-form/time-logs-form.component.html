@@ -1,12 +1,19 @@
-<div class="card bg-base-100 shadow">
+<div
+  class="card card-sm sm:card-md bg-base-100 mx-auto w-full max-w-2xl shadow"
+>
   <div class="card-body">
-    <div class="card-title text-xl font-semibold">
+    <h1 class="card-title text-xl font-semibold">
       {{ isNew() ? "Add New" : "Edit" }} Time Log
-    </div>
+    </h1>
 
     <div class="divider my-2"></div>
 
-    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="space-y-4">
+    <form
+      [formGroup]="formGroup"
+      (ngSubmit)="onSubmit()"
+      class="space-y-4"
+      novalidate
+    >
       <!-- #region Timestamp -->
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Timestamp</legend>
@@ -14,16 +21,14 @@
           type="datetime-local"
           formControlName="timestamp"
           class="input w-full"
-          [class.input-error]="
-            timestamp.invalid && (timestamp.dirty || timestamp.touched)
-          "
+          [class.input-error]="timestampInvalid"
+          [attr.aria-invalid]="timestampInvalid ? 'true' : null"
+          [attr.aria-describedby]="timestampInvalid ? 'timestamp-error' : null"
         />
-        @if (timestamp.touched && timestamp.invalid) {
-          <label class="label pb-0">
-            <span class="label-text-alt text-error">
-              Timestamp is required.
-            </span>
-          </label>
+        @if (timestampInvalid) {
+          <p id="timestamp-error" class="label text-error">
+            Timestamp is required.
+          </p>
         }
       </fieldset>
       <!-- #endregion -->
@@ -34,16 +39,16 @@
         <select
           formControlName="type"
           class="select w-full"
-          [class.input-error]="type.invalid && (type.dirty || type.touched)"
+          [class.select-error]="typeInvalid"
+          [attr.aria-invalid]="typeInvalid ? 'true' : null"
+          [attr.aria-describedby]="typeInvalid ? 'type-error' : null"
         >
-          <option value="" disabled>Select the type</option>
-          <option value="entry">Entry</option>
-          <option value="exit">Exit</option>
+          <option [ngValue]="null" disabled>Select the type</option>
+          <option [ngValue]="'entry'">Entry</option>
+          <option [ngValue]="'exit'">Exit</option>
         </select>
-        @if (type.touched && type.invalid) {
-          <label class="label pb-0">
-            <span class="label-text-alt text-error"> Type is required. </span>
-          </label>
+        @if (typeInvalid) {
+          <p id="type-error" class="label text-error">Type is required.</p>
         }
       </fieldset>
       <!-- #endregion -->
@@ -54,6 +59,7 @@
         <textarea
           formControlName="note"
           class="textarea w-full"
+          rows="3"
           placeholder="Insert notes (optional)"
         ></textarea>
       </fieldset>
@@ -61,14 +67,10 @@
 
       <!-- #region Buttons -->
       <div class="card-actions justify-end">
-        <button class="btn btn-ghost" routerLink="/time-logs">Cancel</button>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="formGroup.invalid || submitting()"
-        >
+        <a class="btn btn-ghost" routerLink="/time-logs">Cancel</a>
+        <button type="submit" class="btn btn-primary" [disabled]="submitting()">
           @if (submitting()) {
-            <span class="loading loading-spinner"></span>
+            <span class="loading loading-spinner" aria-hidden="true"></span>
           }
           Save
         </button>

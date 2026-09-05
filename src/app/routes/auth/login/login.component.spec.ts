@@ -10,6 +10,14 @@ describe('LoginComponent', () => {
   let fixture: ComponentFixture<LoginComponent>;
   let login: LoginComponent;
 
+  const host = () => fixture.nativeElement as HTMLElement;
+
+  const submitButton = () =>
+    host().querySelector('button[type="submit"]') as HTMLButtonElement;
+
+  const errorTextOf = (selector: string) =>
+    host().querySelector(selector)!.textContent!.trim();
+
   const fillValidForm = () => {
     login.email.setValue('someone@example.com');
     login.password.setValue('hunter2');
@@ -50,17 +58,36 @@ describe('LoginComponent', () => {
       expect(login.loginForm.valid).toBe(true);
     });
 
-    it('keeps the submit button disabled while invalid', () => {
-      const button = (fixture.nativeElement as HTMLElement).querySelector(
-        'button[type="submit"]',
-      ) as HTMLButtonElement;
+    it('leaves the submit button usable while invalid', () => {
+      // A disabled submit button cannot tell the user what is missing, so the
+      // form validates on submit instead.
+      expect(submitButton().disabled).toBe(false);
+    });
 
-      expect(button.disabled).toBe(true);
-
-      fillValidForm();
+    it('disables the submit button only while a request is in flight', () => {
+      login.submitting.set(true);
       fixture.detectChanges();
 
-      expect(button.disabled).toBe(false);
+      expect(submitButton().disabled).toBe(true);
+    });
+
+    it('reveals the field errors when an empty form is submitted', async () => {
+      await login.onSubmit();
+      fixture.detectChanges();
+
+      expect(login.email.touched).toBe(true);
+      expect(login.password.touched).toBe(true);
+      expect(errorTextOf('#email-error')).toContain('Email is required.');
+      expect(errorTextOf('#password-error')).toContain('Password is required.');
+    });
+
+    it('points each field at its own error message', async () => {
+      await login.onSubmit();
+      fixture.detectChanges();
+
+      const email = host().querySelector('input[type="email"]')!;
+      expect(email.getAttribute('aria-invalid')).toBe('true');
+      expect(email.getAttribute('aria-describedby')).toBe('email-error');
     });
   });
 
@@ -106,10 +133,9 @@ describe('LoginComponent', () => {
       await login.onSubmit();
       fixture.detectChanges();
 
-      const alert = (fixture.nativeElement as HTMLElement).querySelector(
-        '.alert-error',
-      );
-      expect(alert!.textContent).toContain('Invalid credentials');
+      const alert = host().querySelector('.alert-error')!;
+      expect(alert.getAttribute('role')).toBe('alert');
+      expect(alert.textContent).toContain('Invalid credentials');
     });
 
     it('re-enables the form and clears submitting whatever happens', async () => {

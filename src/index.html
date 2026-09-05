@@ -1,16 +1,31 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
-<head>
-  <meta charset="utf-8">
-  <title>Chronolog</title>
-  <meta name="theme-color" content="#191e24">
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="manifest" href="manifest.webmanifest">
-</head>
-<body class="bg-base-200">
-  <app-root></app-root>
-  <noscript>Please enable JavaScript to continue using this application.</noscript>
-</body>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Chronolog</title>
+    <meta name="description" content="Log your work entry and exit times." />
+    <meta name="theme-color" content="#ffffff" />
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <script>
+      // Apply the stored theme before the first paint, otherwise a returning dark
+      // theme user sees a flash of light. ThemeSelectorComponent takes it from here.
+      try {
+        document.documentElement.setAttribute(
+          "data-theme",
+          localStorage.getItem("theme") === "dark" ? "dark" : "light",
+        );
+      } catch (_) {
+        // Storage can be unavailable (private mode, blocked cookies); keep the default.
+      }
+    </script>
+  </head>
+  <body class="bg-base-200">
+    <app-root></app-root>
+    <noscript
+      >Please enable JavaScript to continue using this application.</noscript
+    >
+  </body>
 </html>

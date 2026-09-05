@@ -23,7 +23,25 @@ describe('CustomDialogService', () => {
 
     await service.show(data);
 
-    expect(open).toHaveBeenCalledWith(CustomDialogComponent, { data });
+    expect(open).toHaveBeenCalledWith(
+      CustomDialogComponent,
+      expect.objectContaining({ data }),
+    );
+  });
+
+  it('names and describes the dialog for assistive technology', async () => {
+    open.mockReturnValue({ closed: of(true) });
+
+    await service.show({ title: 'Alert', message: 'Sure?' });
+
+    expect(open).toHaveBeenCalledWith(
+      CustomDialogComponent,
+      expect.objectContaining({
+        role: 'alertdialog',
+        ariaLabelledBy: 'custom-dialog-title',
+        ariaDescribedBy: 'custom-dialog-message',
+      }),
+    );
   });
 
   it('resolves true when the dialog is confirmed', async () => {

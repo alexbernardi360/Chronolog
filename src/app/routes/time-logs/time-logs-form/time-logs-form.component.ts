@@ -10,6 +10,7 @@ import { finalize } from 'rxjs';
 import { toLocalDateString } from '../../../shared/domain/date-time.utils';
 import { EntryType, TimeLog } from '../../../shared/domain/time-log.interface';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   imports: [ReactiveFormsModule, RouterLink],
@@ -20,6 +21,7 @@ export class TimeLogsFormComponent implements OnInit {
   private readonly timeLogsService = inject(TimeLogsService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly toasts = inject(ToastService);
 
   timeLogId = signal<string | null>(null);
   isNew = computed(() => this.timeLogId() == null);
@@ -41,6 +43,16 @@ export class TimeLogsFormComponent implements OnInit {
     return this.formGroup.controls.type;
   }
 
+  /** Reactive form controls are not signals, so these re-read on every check. */
+  get timestampInvalid() {
+    return (
+      this.timestamp.invalid && (this.timestamp.dirty || this.timestamp.touched)
+    );
+  }
+  get typeInvalid() {
+    return this.type.invalid && (this.type.dirty || this.type.touched);
+  }
+
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
       this.timeLogId.set(paramMap.get('id'));
@@ -56,7 +68,11 @@ export class TimeLogsFormComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.formGroup.invalid) return;
+    if (this.formGroup.invalid) {
+      // The submit button stays enabled, so say what is missing.
+      this.formGroup.markAllAsTouched();
+      return;
+    }
 
     this.formGroup.disable();
     this.submitting.set(true);
@@ -70,6 +86,10 @@ export class TimeLogsFormComponent implements OnInit {
           id: this.timeLogId()!,
         });
 
+    // TimeLogsService swallows failures and completes without emitting, so an
+    // empty completion is the only signal that the save did not happen.
+    let saved = false;
+
     req
       .pipe(
         finalize(() => {
@@ -79,11 +99,21 @@ export class TimeLogsFormComponent implements OnInit {
       )
       .subscribe({
         next: () => {
+          saved = true;
+          this.toasts.success(
+            this.isNew() ? 'Time log created.' : 'Time log updated.',
+          );
           this.router.navigateByUrl('/time-logs', {
             replaceUrl: true,
           });
         },
-        error: (err) => console.error(err),
+        error: (err) => {
+          console.error(err);
+          this.toasts.error('Could not save the time log.');
+        },
+        complete: () => {
+          if (!saved) this.toasts.error('Could not save the time log.');
+        },
       });
   }
 }

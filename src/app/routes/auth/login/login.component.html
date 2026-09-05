@@ -1,51 +1,28 @@
-<div class="flex items-center justify-center min-h-screen">
-  <div class="card bg-base-100 w-96 shadow-sm">
+<div class="flex min-h-dvh items-center justify-center p-4">
+  <div class="card bg-base-100 w-full max-w-sm shadow-sm">
     <div class="card-body">
-      <h2 class="card-title text-2xl font-bold mb-6">Login to Chronolog</h2>
+      <h1 class="card-title mb-4 text-2xl font-bold">Login to Chronolog</h1>
 
       <form
         class="grid grid-cols-1 gap-1"
         [formGroup]="loginForm"
         (ngSubmit)="onSubmit()"
+        novalidate
       >
         <!--  #region Error message -->
         @if (errorMessageVisible()) {
-          <div class="alert alert-error alert-dash">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 shrink-0 stroke-current"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+          <div role="alert" class="alert alert-error alert-dash mb-2">
+            <shared-icon name="error" class="size-5" />
 
             <span>{{ errorMessage() }}</span>
 
             <button
               type="button"
               class="btn btn-xs btn-error btn-square"
+              aria-label="Dismiss error"
               (click)="errorMessage.set(null)"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <shared-icon name="close" class="size-4" />
             </button>
           </div>
         }
@@ -54,98 +31,63 @@
         <!-- #region Email input -->
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Email</legend>
-          <label
-            class="input w-full"
-            [class.input-error]="
-              email.invalid && (email.dirty || email.touched)
-            "
-          >
-            <svg
-              class="h-[1em] opacity-50"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <g
-                stroke-linejoin="round"
-                stroke-linecap="round"
-                stroke-width="2.5"
-                fill="none"
-                stroke="currentColor"
-              >
-                <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-              </g>
-            </svg>
+          <label class="input w-full" [class.input-error]="emailInvalid">
+            <shared-icon name="mail" class="size-4 opacity-50" />
             <input
               type="email"
               placeholder="mail@site.com"
               formControlName="email"
+              autocomplete="email"
               required
+              [attr.aria-invalid]="emailInvalid ? 'true' : null"
+              [attr.aria-describedby]="emailInvalid ? 'email-error' : null"
             />
           </label>
-          @if (email.invalid && (email.dirty || email.touched)) {
-            <label class="label pb-0">
-              <span class="label-text-alt text-error">
-                @if (email.hasError("required")) {
-                  Email is required.
-                } @else if (email.hasError("email")) {
-                  Must be a valid email.
-                }
-              </span>
-            </label>
+          @if (emailInvalid) {
+            <p id="email-error" class="label text-error">
+              @if (email.hasError("required")) {
+                Email is required.
+              } @else if (email.hasError("email")) {
+                Must be a valid email.
+              }
+            </p>
           }
         </fieldset>
         <!-- #endregion -->
 
         <!-- #region Password input -->
         <fieldset class="fieldset">
-          <div class="flex justify-between">
+          <div class="flex items-baseline justify-between gap-2">
             <legend class="fieldset-legend">Password</legend>
-            <legend class="fieldset-label">
-              <a class="label-text-alt link link-hover link-primary">
-                Forgot password?
-              </a>
-            </legend>
-          </div>
-          <label
-            class="input w-full"
-            [class.input-error]="
-              password.invalid && (password.dirty || password.touched)
-            "
-          >
-            <svg
-              class="h-[1em] opacity-50"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
+            <button
+              type="button"
+              class="link link-primary link-hover fieldset-label"
+              title="Password recovery is not available yet"
+              disabled
             >
-              <g
-                stroke-linejoin="round"
-                stroke-linecap="round"
-                stroke-width="2.5"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path
-                  d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"
-                ></path>
-                <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
-              </g>
-            </svg>
+              Forgot password?
+            </button>
+          </div>
+          <label class="input w-full" [class.input-error]="passwordInvalid">
+            <shared-icon name="lock" class="size-4 opacity-50" />
             <input
               type="password"
               placeholder="••••••••"
               formControlName="password"
+              autocomplete="current-password"
               required
+              [attr.aria-invalid]="passwordInvalid ? 'true' : null"
+              [attr.aria-describedby]="
+                passwordInvalid ? 'password-error' : null
+              "
             />
           </label>
-          @if (password.invalid && (password.dirty || password.touched)) {
-            <label class="label pb-0">
+          @if (passwordInvalid) {
+            <p id="password-error" class="label text-error">
               @if (password.hasError("required")) {
-                <span class="label-text-alt text-error">
-                  Password is required.
-                </span>
+                Password is required.
               }
-            </label>
+            </p>
           }
         </fieldset>
         <!-- #endregion -->
@@ -155,10 +97,10 @@
           <button
             type="submit"
             class="btn btn-primary w-full"
-            [disabled]="!loginForm.valid"
+            [disabled]="submitting()"
           >
             @if (submitting()) {
-              <span class="loading loading-spinner"></span>
+              <span class="loading loading-spinner" aria-hidden="true"></span>
             }
             Login
           </button>
@@ -170,7 +112,14 @@
 
       <div class="text-center">
         <p>Don't have an account?</p>
-        <a class="link link-primary">Sign up now</a>
+        <button
+          type="button"
+          class="link link-primary"
+          title="Sign up is not available yet"
+          disabled
+        >
+          Sign up now
+        </button>
       </div>
     </div>
   </div>

@@ -6,10 +6,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, IconComponent],
   templateUrl: './login.component.html',
   styles: [],
 })
@@ -33,8 +34,23 @@ export class LoginComponent {
     return this.loginForm.controls.password;
   }
 
+  /** Reactive form controls are not signals, so these re-read on every check. */
+  get emailInvalid() {
+    return this.email.invalid && (this.email.dirty || this.email.touched);
+  }
+  get passwordInvalid() {
+    return (
+      this.password.invalid && (this.password.dirty || this.password.touched)
+    );
+  }
+
   async onSubmit() {
-    if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) {
+      // The submit button stays enabled so the form can say what is missing
+      // rather than leaving the user guessing at a dead control.
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
     try {
       this.loginForm.disable();

@@ -1,35 +1,49 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { IconComponent } from '../../shared/components/icon/icon.component';
 import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'core-user-dropdown',
-  imports: [],
+  imports: [IconComponent],
   template: `
-    <div class="dropdown dropdown-end">
-      <div
-        tabindex="0"
-        role="button"
-        class="btn btn-ghost btn-circle avatar avatar-placeholder"
-      >
-        <div class="bg-neutral text-neutral-content w-10 rounded-full">
-          <span>{{ avatarPlaceholder() }}</span>
-        </div>
+    <button
+      type="button"
+      class="btn btn-ghost btn-circle avatar avatar-placeholder"
+      popovertarget="user-menu"
+      style="anchor-name:--user-menu"
+      [attr.aria-label]="menuLabel()"
+    >
+      <div class="bg-neutral text-neutral-content w-10 rounded-full">
+        <span>{{ avatarPlaceholder() }}</span>
       </div>
+    </button>
 
-      <ul
-        tabindex="0"
-        class="menu menu-sm dropdown-content bg-base-300 shadow rounded-box z-1 mt-3 w-52 p-2"
-      >
+    <div
+      id="user-menu"
+      popover
+      style="position-anchor:--user-menu"
+      class="dropdown dropdown-end rounded-box bg-base-300 w-56 shadow-lg"
+    >
+      @if (email(); as address) {
+        <div class="border-base-content/10 border-b px-4 py-3">
+          <p class="text-xs opacity-60">Signed in as</p>
+          <p class="truncate text-sm font-medium">{{ address }}</p>
+        </div>
+      }
+
+      <ul class="menu menu-sm w-full">
         <li class="menu-disabled"><a>Profile (WIP)</a></li>
         <li class="menu-disabled"><a>Settings (WIP)</a></li>
         <li>
-          <a
+          <button
+            type="button"
             class="text-error hover:bg-error hover:text-error-content"
             (click)="signOut()"
           >
+            <shared-icon name="logout" class="size-4" />
             Logout
-          </a>
+          </button>
         </li>
       </ul>
     </div>
@@ -37,16 +51,26 @@ import { AuthService } from '../../shared/services/auth.service';
   styles: [],
 })
 export class UserDropdownComponent implements OnInit {
-  private auth = inject(AuthService);
-  private router = inject(Router);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
-  avatarPlaceholder = signal<string | null>(null);
+  readonly email = signal<string | null>(null);
+
+  readonly avatarPlaceholder = computed(
+    () => this.email()?.[0]?.toUpperCase() ?? '?',
+  );
+
+  protected readonly menuLabel = computed(() => {
+    const email = this.email();
+    return email ? `Account menu for ${email}` : 'Account menu';
+  });
 
   async ngOnInit(): Promise<void> {
-    var {
+    const {
       data: { session },
     } = await this.auth.getSession();
-    this.avatarPlaceholder.set(session!.user.email![0].toUpperCase());
+
+    this.email.set(session?.user.email ?? null);
   }
 
   async signOut() {

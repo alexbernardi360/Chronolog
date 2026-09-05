@@ -1,14 +1,22 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [],
+  imports: [RouterLink],
   template: `
-    <div class="hero h-full">
+    <div class="hero min-h-[60vh]">
       <div class="hero-content text-center">
         <div class="max-w-md">
-          <h1 class="text-5xl font-bold">Page not found</h1>
-          <p class="pt-6">We looked everywhere for this page.</p>
-          <p class="pb-6">Are you sure the website URL is correct?</p>
+          <p class="text-primary font-mono text-6xl font-bold">404</p>
+
+          <h1 class="mt-4 text-3xl font-bold sm:text-5xl">Page not found</h1>
+
+          <p class="py-6 opacity-70">
+            We looked everywhere for this page. Are you sure the website URL is
+            correct?
+          </p>
+
+          <a class="btn btn-primary" routerLink="/">Back to home</a>
         </div>
       </div>
     </div>

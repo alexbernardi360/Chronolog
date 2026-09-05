@@ -7,6 +7,7 @@ import { QuickInsertDialogComponent } from '../../shared/dialogs/quick-insert-di
 import { CustomDialogService } from '../../shared/services/custom-dialog.service';
 import { DailyWorksService } from '../../shared/services/daily-works.service';
 import { TimeLogsService } from '../../shared/services/time-logs.service';
+import { ToastService } from '../../shared/services/toast.service';
 import { DailyWorksComponent } from './daily-works.component';
 
 const ROWS: WorkSummary[] = [
@@ -25,12 +26,18 @@ describe('DailyWorksComponent', () => {
 
   const host = () => fixture.nativeElement as HTMLElement;
   const bodyRows = () => host().querySelectorAll('tbody tr');
+  const listRows = () => host().querySelectorAll('ul.list > li');
+  const toastMessages = () =>
+    TestBed.inject(ToastService)
+      .toasts()
+      .map((t) => `${t.type}: ${t.message}`);
   const settle = async () => {
     fixture.detectChanges();
     await fixture.whenStable();
   };
 
-  async function render() {
+  /** Builds the component without waiting for its resources to settle. */
+  function create() {
     TestBed.configureTestingModule({
       imports: [DailyWorksComponent],
       providers: [
@@ -50,6 +57,11 @@ describe('DailyWorksComponent', () => {
 
     fixture = TestBed.createComponent(DailyWorksComponent);
     page = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
+  async function render() {
+    create();
     await settle();
   }
 
@@ -219,6 +231,78 @@ describe('DailyWorksComponent', () => {
       closed.next(false);
       await settle();
 
+      expect(getDailyWorks).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('empty state', () => {
+    it('explains the blank page instead of showing an empty table', async () => {
+      getDailyWorks.mockReturnValue(of([]));
+      await render();
+
+      expect(page.isEmpty()).toBe(true);
+      expect(host().querySelector('table')).toBeNull();
+      expect(host().textContent).toContain('No days recorded yet');
+    });
+
+    it('is not considered empty while the rows are still loading', () => {
+      getDailyWorks.mockReturnValue(new Subject<WorkSummary[]>());
+      create();
+
+      expect(page.dailyWorksResource.isLoading()).toBe(true);
+      expect(page.isEmpty()).toBe(false);
+      expect(host().textContent).not.toContain('No days recorded yet');
+    });
+  });
+
+  describe('accessibility', () => {
+    it('names the delete button after the day it clears', async () => {
+      await render();
+
+      expect(
+        bodyRows()[0].querySelector('button')!.getAttribute('aria-label'),
+      ).toBe('Delete every time log of 01/05/2024');
+    });
+
+    it('uses real table headers', async () => {
+      await render();
+      const headers = Array.from(host().querySelectorAll('thead th'));
+
+      expect(headers).toHaveLength(4);
+      expect(headers.every((h) => h.getAttribute('scope') === 'col')).toBe(
+        true,
+      );
+    });
+
+    it('mirrors every row into the phone list', async () => {
+      await render();
+
+      expect(listRows()).toHaveLength(ROWS.length);
+      expect(listRows()[0].textContent).toContain('01/05/2024');
+    });
+  });
+
+  describe('feedback', () => {
+    it('confirms a delete that went through', async () => {
+      show.mockResolvedValue(true);
+      await render();
+
+      await page.deleteRow('2024-05-01');
+      await settle();
+
+      expect(toastMessages()).toEqual(['success: Day deleted.']);
+    });
+
+    it('reports a delete the service swallowed', async () => {
+      show.mockResolvedValue(true);
+      // The service catches its own errors and completes without emitting.
+      deleteTimeLogsByDate.mockReturnValue(of());
+      await render();
+
+      await page.deleteRow('2024-05-01');
+      await settle();
+
+      expect(toastMessages()).toEqual(['error: Could not delete this day.']);
       expect(getDailyWorks).toHaveBeenCalledTimes(1);
     });
   });

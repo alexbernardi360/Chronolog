@@ -6,7 +6,7 @@ describe('PagerComponent', () => {
   let fixture: ComponentFixture<PagerComponent>;
   let pager: PagerComponent;
 
-  /** Sets the required inputs and returns the rendered page labels. */
+  /** Sets the required inputs and renders. */
   function setup(totalRows: number, pageSize: number, currentPage = 1) {
     fixture.componentRef.setInput('totalRows', totalRows);
     fixture.componentRef.setInput('pageSize', pageSize);
@@ -18,12 +18,20 @@ describe('PagerComponent', () => {
 
   const host = () => fixture.nativeElement as HTMLElement;
 
-  const pageButtons = () =>
+  /** The numbered pages and the ellipsis placeholders, in document order. */
+  const pageCells = () =>
     Array.from(
-      host().querySelectorAll<HTMLButtonElement>('.overflow-x-auto button'),
+      host().querySelectorAll<HTMLElement>(
+        '.join > button[aria-label^="Page "], .join > span.btn-disabled',
+      ),
     );
 
-  const renderedLabels = () => pageButtons().map((b) => b.textContent!.trim());
+  const pageButtons = () =>
+    Array.from(
+      host().querySelectorAll<HTMLButtonElement>('button[aria-label^="Page "]'),
+    );
+
+  const renderedLabels = () => pageCells().map((b) => b.textContent!.trim());
 
   beforeEach(() => {
     TestBed.configureTestingModule({ imports: [PagerComponent] });
@@ -84,14 +92,14 @@ describe('PagerComponent', () => {
       expect(pageValues()).toEqual([1, null, 4, 5, 6, null, 10]);
     });
 
-    it('gives every entry a distinct key so @for can track duplicates', () => {
+    it('gives every entry a distinct key so the loop can track duplicates', () => {
       setup(100, 10, 5);
       const keys = pager.pages().map((p) => p.key);
 
       expect(new Set(keys).size).toBe(keys.length);
     });
 
-    it('renders ellipsis placeholders as disabled buttons', () => {
+    it('renders ellipsis placeholders as inert spans', () => {
       setup(100, 10, 5);
 
       expect(renderedLabels()).toEqual([
@@ -103,17 +111,69 @@ describe('PagerComponent', () => {
         '...',
         '10',
       ]);
-      expect(pageButtons().filter((b) => b.disabled)).toHaveLength(2);
+      const ellipses = pageCells().filter((c) => c.tagName === 'SPAN');
+      expect(ellipses).toHaveLength(2);
+      expect(pageButtons()).toHaveLength(5);
     });
 
-    it('marks the current page button as primary', () => {
+    it('marks the current page as active', () => {
       setup(50, 10, 3);
       const active = pageButtons().filter((b) =>
-        b.classList.contains('btn-primary'),
+        b.classList.contains('btn-active'),
       );
 
       expect(active).toHaveLength(1);
       expect(active[0].textContent!.trim()).toBe('3');
+    });
+
+    it('exposes the current page to assistive technology', () => {
+      setup(50, 10, 3);
+      const current = pageButtons().filter(
+        (b) => b.getAttribute('aria-current') === 'page',
+      );
+
+      expect(current).toHaveLength(1);
+      expect(current[0].getAttribute('aria-label')).toBe('Page 3');
+    });
+
+    it('names every page button', () => {
+      setup(50, 10, 1);
+
+      expect(pageButtons().map((b) => b.getAttribute('aria-label'))).toEqual([
+        'Page 1',
+        'Page 2',
+        'Page 3',
+        'Page 4',
+        'Page 5',
+      ]);
+    });
+  });
+
+  describe('accessibility and small screens', () => {
+    it('wraps itself in a labelled navigation landmark', () => {
+      setup(100, 10, 1);
+
+      expect(host().querySelector('nav')!.getAttribute('aria-label')).toBe(
+        'Pagination',
+      );
+    });
+
+    it('names the previous and next buttons', () => {
+      setup(100, 10, 5);
+
+      expect(
+        host().querySelector('button[aria-label="Previous page"]'),
+      ).not.toBeNull();
+      expect(
+        host().querySelector('button[aria-label="Next page"]'),
+      ).not.toBeNull();
+    });
+
+    it('shows a position readout that replaces the numbers on phones', () => {
+      setup(100, 10, 3);
+
+      const readout = host().querySelector('.join > span[class*="hidden"]')!;
+      expect(readout.textContent!.replace(/\s+/g, ' ').trim()).toBe('3 / 10');
     });
   });
 

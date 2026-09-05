@@ -35,18 +35,24 @@ describe('ThemeSelectorComponent', () => {
   beforeEach(() => {
     localStorage.clear();
     document.documentElement.removeAttribute('data-theme');
+    // Stands in for the daisyUI stylesheet, which the jsdom run does not load.
+    document.documentElement.style.setProperty(
+      '--color-base-100',
+      'oklch(100% 0 0)',
+    );
     TestBed.configureTestingModule({ imports: [ThemeSelectorComponent] });
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
     document.documentElement.removeAttribute('data-theme');
+    document.documentElement.style.removeProperty('--color-base-100');
   });
 
   it('starts from the light theme when nothing is stored', () => {
     render();
 
-    expect(selector.theme).toBe('light');
+    expect(selector.theme()).toBe('light');
     expect(appliedTheme()).toBe('light');
     expect(checkbox().checked).toBe(true);
   });
@@ -56,28 +62,37 @@ describe('ThemeSelectorComponent', () => {
 
     render();
 
-    expect(selector.theme).toBe('dark');
+    expect(selector.theme()).toBe('dark');
     expect(appliedTheme()).toBe('dark');
     expect(checkbox().checked).toBe(false);
   });
 
-  it('mirrors the theme into the theme-color meta tag', () => {
+  it('mirrors the daisyUI base colour into the theme-color meta tag', () => {
     render();
 
-    expect(updateTag).toHaveBeenCalledWith(
-      expect.objectContaining({ name: 'theme-color' }),
-    );
+    expect(updateTag).toHaveBeenCalledWith({
+      name: 'theme-color',
+      content: 'oklch(100% 0 0)',
+    });
+  });
+
+  it('leaves the meta tag alone when the base colour is unreadable', () => {
+    document.documentElement.style.removeProperty('--color-base-100');
+
+    render();
+
+    expect(updateTag).not.toHaveBeenCalled();
   });
 
   it('flips light to dark and back', () => {
     render();
 
     selector.toggleTheme();
-    expect(selector.theme).toBe('dark');
+    expect(selector.theme()).toBe('dark');
     expect(appliedTheme()).toBe('dark');
 
     selector.toggleTheme();
-    expect(selector.theme).toBe('light');
+    expect(selector.theme()).toBe('light');
     expect(appliedTheme()).toBe('light');
   });
 
@@ -104,7 +119,18 @@ describe('ThemeSelectorComponent', () => {
     checkbox().click();
     fixture.detectChanges();
 
-    expect(selector.theme).toBe('dark');
+    expect(selector.theme()).toBe('dark');
     expect(checkbox().checked).toBe(false);
+  });
+
+  it('tells the user which theme the control switches to', () => {
+    render();
+
+    expect(checkbox().getAttribute('aria-label')).toBe('Switch to dark theme');
+
+    selector.toggleTheme();
+    fixture.detectChanges();
+
+    expect(checkbox().getAttribute('aria-label')).toBe('Switch to light theme');
   });
 });

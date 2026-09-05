@@ -1,134 +1,196 @@
-<div class="card bg-base-100 shadow">
-  <div class="card-body">
-    <div class="card-title justify-between text-xl font-semibold">
-      Time Logs
-      <div>
+<div class="card card-sm sm:card-md bg-base-100 shadow">
+  <div class="card-body gap-4">
+    <!-- #region Header -->
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h1 class="card-title text-xl font-semibold">Time Logs</h1>
+
+      <div class="flex flex-wrap gap-2">
         <button
-          class="btn btn-sm btn-primary mr-2"
+          type="button"
+          class="btn btn-sm"
           (click)="openQuickInsertDialog()"
         >
           Quick Insert
         </button>
-        <a class="btn btn-sm btn-primary" routerLink="./new">Add New</a>
+
+        <a class="btn btn-sm btn-primary" routerLink="./new">
+          <shared-icon name="plus" class="size-4" />
+          Add New
+        </a>
       </div>
     </div>
+    <!-- #endregion -->
 
-    <!-- <div class="divider my-2"></div> -->
+    @if (isEmpty()) {
+      <!-- #region Empty state -->
+      <div class="flex flex-col items-center gap-3 py-12 text-center">
+        <shared-icon name="inbox" class="size-10 opacity-40" />
 
-    <div class="overflow-x-auto">
-      <table class="table table-sm table-fixed w-full">
-        <thead>
-          <tr>
-            <td class="w-[80px]">Date</td>
-            <td class="w-[60px]">Time</td>
-            <td class="w-[80px]">Type</td>
-            <td class="w-[140px]">Created at</td>
-            <td class="w-[140px]">Updated at</td>
-            <td class="w-[350px]">Note</td>
-            <th class="w-[80px]"></th>
-          </tr>
-        </thead>
+        <div>
+          <p class="font-medium">No time logs yet</p>
+          <p class="text-sm opacity-60">
+            Add your first entry to start tracking your hours.
+          </p>
+        </div>
 
-        <tbody>
-          @if (timeLogsResource.isLoading()) {
-            @for (row of loadingRows(); track row) {
-              <tr>
-                <td>
-                  <div class="skeleton h-6 w-16"></div>
-                </td>
-                <td>
-                  <div class="skeleton h-6 w-8"></div>
-                </td>
-                <td>
-                  <div
-                    class="skeleton h-6"
-                    [class.w-10]="getRandomWidth(0, 10) < 5"
-                    [class.w-12]="getRandomWidth(0, 10) >= 5"
-                  ></div>
-                </td>
-                <td>
-                  <div class="skeleton h-6 w-28"></div>
-                </td>
-                <td>
-                  <div class="skeleton h-6 w-28"></div>
-                </td>
-                <td>
-                  <div
-                    class="skeleton h-6 w-1/12"
-                    [style.width.%]="getRandomWidth(0, 100)"
-                  ></div>
-                </td>
-              </tr>
-            }
-          } @else {
-            @for (item of timeLogsResource.value(); track item.id) {
-              <tr class="hover:bg-base-200">
-                <td class="whitespace-nowrap">
-                  {{ item.timestamp | date: "dd/MM/yyyy" }}
-                </td>
-                <td class="whitespace-nowrap">
-                  {{ item.timestamp | date: "HH:mm" }}
-                </td>
-                <td>
-                  <shared-entry-type-badge [type]="item.type" />
-                </td>
-                <td class="whitespace-nowrap">
-                  {{ item.created_at | date: "dd/MM/yyyy, HH:mm:ss" }}
-                </td>
-                <td class="whitespace-nowrap">
-                  {{ item.created_at | date: "dd/MM/yyyy, HH:mm:ss" }}
-                </td>
-                <td class="truncate">
-                  {{ item.note }}
-                </td>
-                <th>
-                  <div class="flex justify-end">
-                    <a
-                      class="btn btn-xs btn-ghost text-primary hover:bg-primary hover:text-primary-content"
-                      [routerLink]="['./edit', item.id]"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 fill-current"
-                        viewBox="0 0 24 24"
+        <a class="btn btn-sm btn-primary" routerLink="./new">Add New</a>
+      </div>
+      <!-- #endregion -->
+    } @else {
+      <!-- #region Table, from sm up -->
+      <div class="hidden overflow-x-auto sm:block">
+        <table class="table table-sm table-zebra">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Time</th>
+              <th scope="col">Type</th>
+              <th scope="col" class="hidden lg:table-cell">Created at</th>
+              <th scope="col" class="hidden lg:table-cell">Updated at</th>
+              <th scope="col">Note</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (timeLogsResource.isLoading()) {
+              @for (row of loadingRows(); track row.key) {
+                <tr>
+                  <td><div class="skeleton h-6 w-20"></div></td>
+                  <td><div class="skeleton h-6 w-12"></div></td>
+                  <td><div class="skeleton h-6 w-14"></div></td>
+                  <td class="hidden lg:table-cell">
+                    <div class="skeleton h-6 w-32"></div>
+                  </td>
+                  <td class="hidden lg:table-cell">
+                    <div class="skeleton h-6 w-32"></div>
+                  </td>
+                  <td>
+                    <div
+                      class="skeleton h-6"
+                      [style.width.%]="row.noteWidth"
+                    ></div>
+                  </td>
+                  <td><div class="skeleton ms-auto h-6 w-16"></div></td>
+                </tr>
+              }
+            } @else {
+              @for (item of timeLogsResource.value(); track item.id) {
+                <tr class="hover:bg-base-300">
+                  <td class="whitespace-nowrap">
+                    {{ item.timestamp | date: "dd/MM/yyyy" }}
+                  </td>
+                  <td class="whitespace-nowrap font-mono">
+                    {{ item.timestamp | date: "HH:mm" }}
+                  </td>
+                  <td>
+                    <shared-entry-type-badge [type]="item.type" />
+                  </td>
+                  <td class="hidden whitespace-nowrap opacity-70 lg:table-cell">
+                    {{ item.created_at | date: "dd/MM/yyyy, HH:mm:ss" }}
+                  </td>
+                  <td class="hidden whitespace-nowrap opacity-70 lg:table-cell">
+                    {{ item.updated_at | date: "dd/MM/yyyy, HH:mm:ss" }}
+                  </td>
+                  <td class="max-w-xs truncate" [title]="item.note ?? ''">
+                    {{ item.note }}
+                  </td>
+                  <td>
+                    <div class="flex justify-end gap-1">
+                      <a
+                        class="btn btn-xs btn-ghost text-primary hover:bg-primary hover:text-primary-content"
+                        [routerLink]="['./edit', item.id]"
+                        [attr.aria-label]="editLabel(item.timestamp)"
                       >
-                        <path d="M0 0h24v24H0z" fill="none" />
-                        <path
-                          d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                        />
-                      </svg>
-                    </a>
-                    <button
-                      type="button"
-                      class="btn btn-xs btn-ghost text-error hover:bg-error hover:text-error-content"
-                      (click)="deleteRow(item.id!)"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 fill-current"
-                        viewBox="0 0 24 24"
+                        <shared-icon name="edit" class="size-4" />
+                      </a>
+
+                      <button
+                        type="button"
+                        class="btn btn-xs btn-ghost text-error hover:bg-error hover:text-error-content"
+                        [attr.aria-label]="deleteLabel(item.timestamp)"
+                        (click)="deleteRow(item.id!)"
                       >
-                        <path d="M0 0h24v24H0z" fill="none" />
-                        <path
-                          d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </th>
-              </tr>
+                        <shared-icon name="delete" class="size-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
             }
+          </tbody>
+        </table>
+      </div>
+      <!-- #endregion -->
+
+      <!-- #region List, phones only -->
+      <ul class="list sm:hidden">
+        @if (timeLogsResource.isLoading()) {
+          @for (row of loadingRows(); track row.key) {
+            <li class="list-row items-center">
+              <div class="flex flex-col gap-1">
+                <div class="skeleton h-4 w-20"></div>
+                <div class="skeleton h-6 w-14"></div>
+              </div>
+              <div class="list-col-grow">
+                <div class="skeleton h-4 w-14"></div>
+              </div>
+              <div class="skeleton h-6 w-14"></div>
+            </li>
           }
-        </tbody>
-      </table>
-    </div>
+        } @else {
+          @for (item of timeLogsResource.value(); track item.id) {
+            <li class="list-row items-center">
+              <div>
+                <div class="text-xs opacity-60">
+                  {{ item.timestamp | date: "dd/MM/yyyy" }}
+                </div>
+                <div class="font-mono text-lg font-semibold">
+                  {{ item.timestamp | date: "HH:mm" }}
+                </div>
+              </div>
+
+              <div class="list-col-grow min-w-0">
+                <shared-entry-type-badge [type]="item.type" />
+
+                @if (item.note) {
+                  <p class="mt-1 line-clamp-2 text-xs opacity-60">
+                    {{ item.note }}
+                  </p>
+                }
+              </div>
+
+              <div class="flex gap-1">
+                <a
+                  class="btn btn-sm btn-ghost btn-square text-primary"
+                  [routerLink]="['./edit', item.id]"
+                  [attr.aria-label]="editLabel(item.timestamp)"
+                >
+                  <shared-icon name="edit" class="size-4" />
+                </a>
+
+                <button
+                  type="button"
+                  class="btn btn-sm btn-ghost btn-square text-error"
+                  [attr.aria-label]="deleteLabel(item.timestamp)"
+                  (click)="deleteRow(item.id!)"
+                >
+                  <shared-icon name="delete" class="size-4" />
+                </button>
+              </div>
+            </li>
+          }
+        }
+      </ul>
+      <!-- #endregion -->
+    }
 
     @if (totalRowsResource.value() != null) {
       <shared-pager
         [totalRows]="totalRowsResource.value()!"
         [pageSize]="currentPageSize()"
         [(currentPage)]="currentPage"
-        class="mt-4"
+        class="mt-2"
       />
     }
   </div>

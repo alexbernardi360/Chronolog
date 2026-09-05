@@ -1,139 +1,65 @@
-<dialog class="modal modal-open">
+<dialog class="modal modal-bottom sm:modal-middle modal-open">
   <div class="modal-box">
-    <h3 class="text-lg font-bold">Quick Insert</h3>
-    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-      <div class="grid grid-cols-2 gap-4 pt-4">
+    <h3 id="quick-insert-title" class="text-lg font-bold">Quick Insert</h3>
+    <p class="text-sm opacity-60">
+      Writes the four punches of a standard working day.
+    </p>
+
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" novalidate>
+      <div class="grid grid-cols-1 gap-x-4 pt-4 sm:grid-cols-2">
         <!-- #region Date -->
-        <fieldset class="fieldset">
+        <fieldset class="fieldset sm:col-span-2">
           <legend class="fieldset-legend">Date</legend>
           <input
             type="date"
             formControlName="date"
             class="input w-full"
-            [class.input-error]="date.invalid && (date.dirty || date.touched)"
+            [class.input-error]="dateInvalid"
+            [attr.aria-invalid]="dateInvalid ? 'true' : null"
+            [attr.aria-describedby]="dateInvalid ? 'date-error' : null"
           />
-          @if (date.touched && date.invalid) {
-            <label class="label pb-0">
-              <span class="label-text-alt text-error"> Date is required. </span>
-            </label>
+          @if (dateInvalid) {
+            <p id="date-error" class="label text-error">Date is required.</p>
           }
         </fieldset>
         <!-- #endregion -->
 
-        <!-- #region Empty-->
-        <div class="col-span-1"></div>
-        <!-- #endregion -->
+        <!-- #region The four punches -->
+        @for (slot of slots; track slot.control) {
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">{{ slot.label }}</legend>
 
-        <!-- #region Morning In-->
-        <fieldset class="fieldset">
-          <div class="flex justify-between">
-            <legend class="fieldset-legend">Morning In</legend>
-            <legend class="fieldset-label">
-              <shared-entry-type-badge type="entry" />
-            </legend>
-          </div>
-          <input
-            type="time"
-            formControlName="time1"
-            class="input input-bordered w-full"
-            [class.input-error]="
-              time1.invalid && (time1.dirty || time1.touched)
-            "
-          />
-          @if (time1.touched && time1.invalid) {
-            <label class="label pb-0">
-              <span class="label-text-alt text-error">
-                Morning In is required.
-              </span>
+            <label
+              class="input w-full"
+              [class.input-error]="slotInvalid(slot.control)"
+            >
+              <input
+                type="time"
+                [formControlName]="slot.control"
+                [attr.aria-invalid]="slotInvalid(slot.control) ? 'true' : null"
+                [attr.aria-describedby]="
+                  slotInvalid(slot.control) ? slot.control + '-error' : null
+                "
+              />
+              <shared-entry-type-badge [type]="slot.type" />
             </label>
-          }
-        </fieldset>
-        <!-- #endregion -->
 
-        <!-- #region Morning Out-->
-        <fieldset class="fieldset">
-          <div class="flex justify-between">
-            <legend class="fieldset-legend">Morning Out</legend>
-            <legend class="fieldset-label">
-              <shared-entry-type-badge type="exit" />
-            </legend>
-          </div>
-          <input
-            type="time"
-            formControlName="time2"
-            class="input w-full"
-            [class.input-error]="
-              time2.invalid && (time2.dirty || time2.touched)
-            "
-          />
-          @if (time2.touched && time2.invalid) {
-            <label class="label pb-0">
-              <span class="label-text-alt text-error">
-                Morning Out is required.
-              </span>
-            </label>
-          }
-        </fieldset>
-        <!-- #endregion -->
-
-        <!-- #region Afternoon In -->
-        <fieldset class="fieldset">
-          <div class="flex justify-between">
-            <legend class="fieldset-legend">Afternoon In</legend>
-            <legend class="fieldset-label">
-              <shared-entry-type-badge type="entry" />
-            </legend>
-          </div>
-          <input
-            type="time"
-            formControlName="time3"
-            class="input w-full"
-            [class.input-error]="
-              time3.invalid && (time3.dirty || time3.touched)
-            "
-          />
-          @if (time3.touched && time3.invalid) {
-            <label class="label pb-0">
-              <span class="label-text-alt text-error">
-                Afternoon In is required.
-              </span>
-            </label>
-          }
-        </fieldset>
-        <!-- #endregion -->
-
-        <!-- #region Afternoon Out -->
-        <fieldset class="fieldset">
-          <div class="flex justify-between">
-            <legend class="fieldset-legend">Afternoon Out</legend>
-            <legend class="fieldset-label">
-              <shared-entry-type-badge type="exit" />
-            </legend>
-          </div>
-          <input
-            type="time"
-            formControlName="time4"
-            class="input w-full"
-            [class.input-error]="
-              time4.invalid && (time4.dirty || time4.touched)
-            "
-          />
-          @if (time4.touched && time4.invalid) {
-            <label class="label pb-0">
-              <span class="label-text-alt text-error">
-                Afternoon Out is required.
-              </span>
-            </label>
-          }
-        </fieldset>
+            @if (slotInvalid(slot.control)) {
+              <p [id]="slot.control + '-error'" class="label text-error">
+                {{ slot.label }} is required.
+              </p>
+            }
+          </fieldset>
+        }
         <!-- #endregion -->
 
         <!-- #region Note -->
-        <fieldset class="fieldset col-span-2">
+        <fieldset class="fieldset sm:col-span-2">
           <legend class="fieldset-legend">Note</legend>
           <textarea
             formControlName="note"
             class="textarea w-full"
+            rows="2"
             placeholder="Insert notes (optional)"
           ></textarea>
         </fieldset>
@@ -151,13 +77,9 @@
           Cancel
         </button>
 
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="formGroup.invalid"
-        >
+        <button type="submit" class="btn btn-primary" [disabled]="submitting()">
           @if (submitting()) {
-            <span class="loading loading-spinner"></span>
+            <span class="loading loading-spinner" aria-hidden="true"></span>
           }
           Save
         </button>

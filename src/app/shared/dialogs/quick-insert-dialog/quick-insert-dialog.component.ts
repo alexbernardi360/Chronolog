@@ -13,8 +13,17 @@ import {
   toLocalDateOnlyString,
   toLocalTimeString,
 } from '../../domain/date-time.utils';
-import { TimeLog } from '../../domain/time-log.interface';
+import { EntryType, TimeLog } from '../../domain/time-log.interface';
 import { TimeLogsService } from '../../services/time-logs.service';
+import { ToastService } from '../../services/toast.service';
+
+type TimeSlotControl = 'time1' | 'time2' | 'time3' | 'time4';
+
+interface TimeSlot {
+  readonly control: TimeSlotControl;
+  readonly label: string;
+  readonly type: EntryType;
+}
 
 @Component({
   imports: [DialogModule, ReactiveFormsModule, EntryTypeBadgeComponent],
@@ -26,8 +35,17 @@ export class QuickInsertDialogComponent {
     DialogRef<boolean, QuickInsertDialogComponent>,
   );
   private readonly timeLogsService = inject(TimeLogsService);
+  private readonly toasts = inject(ToastService);
 
   readonly submitting = signal(false);
+
+  /** The four punches of a standard day, in the order they are written. */
+  protected readonly slots: readonly TimeSlot[] = [
+    { control: 'time1', label: 'Morning In', type: 'entry' },
+    { control: 'time2', label: 'Morning Out', type: 'exit' },
+    { control: 'time3', label: 'Afternoon In', type: 'entry' },
+    { control: 'time4', label: 'Afternoon Out', type: 'exit' },
+  ];
 
   readonly formGroup = new FormGroup({
     date: new FormControl<string>(toLocalDateOnlyString(new Date()), [
@@ -64,41 +82,39 @@ export class QuickInsertDialogComponent {
     return this.formGroup.controls.time4;
   }
 
+  protected get dateInvalid() {
+    return this.date.invalid && (this.date.dirty || this.date.touched);
+  }
+
+  /** True once the user has had a chance to see the slot is empty. */
+  protected slotInvalid(name: TimeSlotControl) {
+    const control = this.formGroup.controls[name];
+    return control.invalid && (control.dirty || control.touched);
+  }
+
   onSubmit(): void {
-    if (this.formGroup.invalid) return;
+    if (this.formGroup.invalid) {
+      // The submit button stays enabled, so say what is missing.
+      this.formGroup.markAllAsTouched();
+      return;
+    }
 
     this.formGroup.disable();
     this.submitting.set(true);
 
-    const timelog1: TimeLog = {
-      timestamp: `${this.date.value}T${this.time1.value}`,
-      type: 'entry',
-      note: this.formGroup.value.note ?? null,
-    };
-    const timelog2: TimeLog = {
-      timestamp: `${this.date.value}T${this.time2.value}`,
-      type: 'exit',
-      note: this.formGroup.value.note ?? null,
-    };
-    const timelog3: TimeLog = {
-      timestamp: `${this.date.value}T${this.time3.value}`,
-      type: 'entry',
-      note: this.formGroup.value.note ?? null,
-    };
-    const timelog4: TimeLog = {
-      timestamp: `${this.date.value}T${this.time4.value}`,
-      type: 'exit',
-      note: this.formGroup.value.note ?? null,
-    };
+    const note = this.formGroup.value.note ?? null;
+    const timeLogs: TimeLog[] = this.slots.map((slot) => ({
+      timestamp: `${this.date.value}T${this.formGroup.controls[slot.control].value}`,
+      type: slot.type,
+      note,
+    }));
 
-    const req = this.timeLogsService.createNewTimeLogs([
-      timelog1,
-      timelog2,
-      timelog3,
-      timelog4,
-    ]);
+    // TimeLogsService swallows failures and completes without emitting, so an
+    // empty completion is the only signal that the insert did not happen.
+    let inserted = false;
 
-    req
+    this.timeLogsService
+      .createNewTimeLogs(timeLogs)
       .pipe(
         finalize(() => {
           this.formGroup.enable();
@@ -106,8 +122,18 @@ export class QuickInsertDialogComponent {
         }),
       )
       .subscribe({
-        next: () => this.dialogRef.close(true),
-        error: (err) => console.error(err),
+        next: () => {
+          inserted = true;
+          this.toasts.success('Day inserted.');
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          console.error(err);
+          this.toasts.error('Could not insert the day.');
+        },
+        complete: () => {
+          if (!inserted) this.toasts.error('Could not insert the day.');
+        },
       });
   }
 

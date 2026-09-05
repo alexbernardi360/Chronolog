@@ -5,12 +5,21 @@ import { NavbarComponent } from './navbar.component';
 @Component({
   imports: [NavbarComponent, RouterOutlet],
   template: `
-    <div class="flex flex-col h-screen">
-      <div class="flex-none">
-        <core-navbar />
-      </div>
+    <div class="flex min-h-dvh flex-col">
+      <a
+        href="#main-content"
+        class="btn btn-primary btn-sm sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"
+      >
+        Skip to content
+      </a>
 
-      <main class="grow h-full overflow-y-auto p-4 container mx-auto">
+      <core-navbar />
+
+      <main
+        id="main-content"
+        tabindex="-1"
+        class="container mx-auto w-full grow p-4"
+      >
         <router-outlet />
       </main>
     </div>

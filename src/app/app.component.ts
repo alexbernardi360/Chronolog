@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ToasterComponent } from './shared/components/toaster/toaster.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ToasterComponent],
   template: `
-    <div class="bg-base-200">
-      <router-outlet />
-    </div>
+    <router-outlet />
+    <shared-toaster />
   `,
   styles: [],
 })

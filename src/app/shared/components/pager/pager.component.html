@@ -1,50 +1,49 @@
 @if (isVisible()) {
-  <div class="flex justify-center gap-1">
-    <!-- Previous Button -->
-    <button
-      class="btn btn-sm btn-outline btn-primary"
-      [disabled]="isPreviousDisabled()"
-      (click)="previousPage()"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6 fill-current"
-        viewBox="0 0 24 24"
-      >
-        <path d="M0 0h24v24H0z" fill="none" />
-        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-      </svg>
-    </button>
-
-    <!-- Page Numbers -->
-    <div class="flex gap-1 overflow-x-auto overflow-y-hidden">
-      @for(page of pages(); track page.key) {
+  <nav aria-label="Pagination" class="flex justify-center">
+    <div class="join">
       <button
-        class="btn btn-sm"
-        [class.btn-primary]="page.value === currentPage()"
-        [class.btn-disabled]="page.value === null"
-        [disabled]="page.value === null"
-        (click)="page.value !== null && changePage(page.value)"
+        type="button"
+        class="btn btn-sm join-item"
+        aria-label="Previous page"
+        [disabled]="isPreviousDisabled()"
+        (click)="previousPage()"
       >
-        {{ page.value ?? '...' }}
+        <shared-icon name="chevron-left" class="size-5" />
       </button>
-      }
-    </div>
 
-    <!-- Next Button -->
-    <button
-      class="btn btn-sm btn-outline btn-primary"
-      [disabled]="isNextDisabled()"
-      (click)="nextPage()"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6 fill-current"
-        viewBox="0 0 24 24"
+      <!-- Phones get a position readout in place of the numbered pages. -->
+      <span class="btn btn-sm join-item pointer-events-none sm:hidden">
+        {{ currentPage() }} / {{ totalPages() }}
+      </span>
+
+      @for (page of pages(); track page.key) {
+        @if (page.value === null) {
+          <span class="btn btn-sm join-item btn-disabled hidden sm:inline-flex">
+            ...
+          </span>
+        } @else {
+          <button
+            type="button"
+            class="btn btn-sm join-item hidden sm:inline-flex"
+            [class.btn-active]="page.value === currentPage()"
+            [attr.aria-current]="page.value === currentPage() ? 'page' : null"
+            [attr.aria-label]="'Page ' + page.value"
+            (click)="changePage(page.value)"
+          >
+            {{ page.value }}
+          </button>
+        }
+      }
+
+      <button
+        type="button"
+        class="btn btn-sm join-item"
+        aria-label="Next page"
+        [disabled]="isNextDisabled()"
+        (click)="nextPage()"
       >
-        <path d="M0 0h24v24H0z" fill="none" />
-        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
-      </svg>
-    </button>
-  </div>
-  }
+        <shared-icon name="chevron-right" class="size-5" />
+      </button>
+    </div>
+  </nav>
+}

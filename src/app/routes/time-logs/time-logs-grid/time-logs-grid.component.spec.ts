@@ -7,6 +7,7 @@ import { QuickInsertDialogComponent } from '../../../shared/dialogs/quick-insert
 import { TimeLog } from '../../../shared/domain/time-log.interface';
 import { CustomDialogService } from '../../../shared/services/custom-dialog.service';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
+import { ToastService } from '../../../shared/services/toast.service';
 import { TimeLogsGridComponent } from './time-logs-grid.component';
 
 const ROWS: TimeLog[] = [
@@ -29,8 +30,14 @@ describe('TimeLogsGridComponent', () => {
     await fixture.whenStable();
   };
   const bodyRows = () => host().querySelectorAll('tbody tr');
+  const listRows = () => host().querySelectorAll('ul.list > li');
+  const toastMessages = () =>
+    TestBed.inject(ToastService)
+      .toasts()
+      .map((t) => `${t.type}: ${t.message}`);
 
-  async function render() {
+  /** Builds the component without waiting for its resources to settle. */
+  function create() {
     TestBed.configureTestingModule({
       imports: [TimeLogsGridComponent],
       providers: [
@@ -51,6 +58,10 @@ describe('TimeLogsGridComponent', () => {
     fixture = TestBed.createComponent(TimeLogsGridComponent);
     grid = fixture.componentInstance;
     fixture.detectChanges();
+  }
+
+  async function render() {
+    create();
     await fixture.whenStable();
   }
 
@@ -229,6 +240,130 @@ describe('TimeLogsGridComponent', () => {
       await settle();
 
       expect(getTimeLogs).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('empty state', () => {
+    it('offers a way forward instead of an empty table', async () => {
+      getTimeLogs.mockReturnValue(of([]));
+      await render();
+
+      expect(grid.isEmpty()).toBe(true);
+      expect(host().querySelector('table')).toBeNull();
+      expect(host().textContent).toContain('No time logs yet');
+    });
+
+    it('is not considered empty while the rows are still loading', () => {
+      // A resource that never resolves: the placeholder must not flash.
+      getTimeLogs.mockReturnValue(new Subject<TimeLog[]>());
+      create();
+
+      expect(grid.timeLogsResource.isLoading()).toBe(true);
+      expect(grid.isEmpty()).toBe(false);
+      expect(host().textContent).not.toContain('No time logs yet');
+    });
+  });
+
+  describe('columns', () => {
+    it('shows the update time in Updated at, not the creation time', async () => {
+      getTimeLogs.mockReturnValue(
+        of([
+          {
+            ...ROWS[0],
+            created_at: '2024-05-01T09:00',
+            updated_at: '2024-06-02T10:15',
+          },
+        ]),
+      );
+      await render();
+
+      const cells = bodyRows()[0].querySelectorAll('td');
+      expect(cells[3].textContent).toContain('01/05/2024');
+      expect(cells[4].textContent).toContain('02/06/2024');
+    });
+
+    it('mirrors every row into the phone list', async () => {
+      await render();
+
+      expect(listRows()).toHaveLength(ROWS.length);
+      expect(listRows()[0].textContent).toContain('08:30');
+    });
+  });
+
+  describe('skeletons', () => {
+    it('keeps the placeholder widths stable between checks', async () => {
+      getTimeLogsCount.mockReturnValue(of(25));
+      await render();
+
+      const first = grid.loadingRows();
+      fixture.detectChanges();
+
+      // Recomputing new random widths on every check made them flicker.
+      expect(grid.loadingRows()).toBe(first);
+      expect(first.map((r) => r.noteWidth)).toEqual(
+        grid.loadingRows().map((r) => r.noteWidth),
+      );
+    });
+  });
+
+  describe('accessibility', () => {
+    it('names each row action after the row it acts on', async () => {
+      await render();
+      const row = bodyRows()[0];
+
+      expect(row.querySelector('a')!.getAttribute('aria-label')).toBe(
+        'Edit the log of 01/05/2024 08:30',
+      );
+      expect(row.querySelector('button')!.getAttribute('aria-label')).toBe(
+        'Delete the log of 01/05/2024 08:30',
+      );
+    });
+
+    it('uses real table headers', async () => {
+      await render();
+      const headers = Array.from(host().querySelectorAll('thead th'));
+
+      expect(headers).toHaveLength(7);
+      expect(headers.every((h) => h.getAttribute('scope') === 'col')).toBe(
+        true,
+      );
+    });
+  });
+
+  describe('feedback', () => {
+    it('confirms a delete that went through', async () => {
+      show.mockResolvedValue(true);
+      await render();
+
+      await grid.deleteRow('1');
+      await settle();
+
+      expect(toastMessages()).toEqual(['success: Time log deleted.']);
+    });
+
+    it('reports a delete the service swallowed', async () => {
+      show.mockResolvedValue(true);
+      // The service catches its own errors and completes without emitting.
+      deleteTimeLog.mockReturnValue(of());
+      await render();
+
+      await grid.deleteRow('1');
+      await settle();
+
+      expect(toastMessages()).toEqual([
+        'error: Could not delete the time log.',
+      ]);
+      expect(getTimeLogs).toHaveBeenCalledTimes(1);
+    });
+
+    it('says nothing when the user cancels', async () => {
+      show.mockResolvedValue(false);
+      await render();
+
+      await grid.deleteRow('1');
+      await settle();
+
+      expect(toastMessages()).toEqual([]);
     });
   });
 });

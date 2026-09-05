@@ -1,97 +1,157 @@
-<div class="card bg-base-100 shadow">
-  <div class="card-body">
-    <div class="card-title justify-between text-xl font-semibold">
-      Daily Works
-      <div>
+<div class="card card-sm sm:card-md bg-base-100 shadow">
+  <div class="card-body gap-4">
+    <!-- #region Header -->
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h1 class="card-title text-xl font-semibold">Daily Works</h1>
+
+      <button
+        type="button"
+        class="btn btn-sm btn-primary"
+        (click)="openQuickInsertDialog()"
+      >
+        <shared-icon name="plus" class="size-4" />
+        Quick Insert
+      </button>
+    </div>
+    <!-- #endregion -->
+
+    @if (isEmpty()) {
+      <!-- #region Empty state -->
+      <div class="flex flex-col items-center gap-3 py-12 text-center">
+        <shared-icon name="inbox" class="size-10 opacity-40" />
+
+        <div>
+          <p class="font-medium">No days recorded yet</p>
+          <p class="text-sm opacity-60">
+            Days appear here once their time logs are in.
+          </p>
+        </div>
+
         <button
-          class="btn btn-sm btn-primary mr-2"
+          type="button"
+          class="btn btn-sm btn-primary"
           (click)="openQuickInsertDialog()"
         >
           Quick Insert
         </button>
-        <!-- <a class="btn btn-sm btn-primary" routerLink="./new">Add New</a> -->
       </div>
-    </div>
+      <!-- #endregion -->
+    } @else {
+      <!-- #region Table, from sm up -->
+      <div class="hidden overflow-x-auto sm:block">
+        <table class="table table-sm table-zebra">
+          <thead>
+            <tr>
+              <th scope="col">Day</th>
+              <th scope="col">Total hours</th>
+              <th scope="col">Status</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
 
-    <!-- <div class="divider my-2"></div> -->
-
-    <div class="overflow-x-auto">
-      <table class="table table-sm table-fixed w-full">
-        <thead>
-          <tr>
-            <td >Day</td>
-            <td >Total hours</td>
-            <td >Status</td>
-            <th ></th>
-          </tr>
-        </thead>
-
-        <tbody>
-          @if (dailyWorksResource.isLoading()) {
-            @for (row of loadingRows(); track row) {
-              <tr>
-                <td>
-                  <div class="skeleton h-6 w-16"></div>
-                </td>
-                <td>
-                  <div class="skeleton h-6 w-10"></div>
-                </td>
-                <td>
-                  <div class="skeleton h-6 w-6"></div>
-                </td>
-              </tr>
-            }
-          } @else {
-            @for (item of dailyWorksResource.value(); track item.day) {
-              <tr class="hover:bg-base-200">
-                <td class="whitespace-nowrap">
-                  {{ item.day | date: "dd/MM/yyyy" }}
-                </td>
-                <td class="whitespace-nowrap">
-                  {{ item.total_hours }}
-                </td>
-                <td class="whitespace-nowrap">
-                  <div
-                    class="badge badge-soft badge-xs font-mono font-bold uppercase"
-                    [class.badge-success]="item.is_valid"
-                    [class.badge-warning]="!item.is_valid"
-                  >
-                    {{ item.is_valid ? "No issues" : "Check time logs" }}
-                  </div>
-                </td>
-                <th>
-                  <div class="flex justify-end">
-                    <button
-                      type="button"
-                      class="btn btn-xs btn-ghost text-error hover:bg-error hover:text-error-content"
-                      (click)="deleteRow(item.day)"
+          <tbody>
+            @if (dailyWorksResource.isLoading()) {
+              @for (row of loadingRows(); track row) {
+                <tr>
+                  <td><div class="skeleton h-6 w-20"></div></td>
+                  <td><div class="skeleton h-6 w-12"></div></td>
+                  <td><div class="skeleton h-6 w-28"></div></td>
+                  <td><div class="skeleton ms-auto h-6 w-8"></div></td>
+                </tr>
+              }
+            } @else {
+              @for (item of dailyWorksResource.value(); track item.day) {
+                <tr class="hover:bg-base-300">
+                  <td class="whitespace-nowrap">
+                    {{ item.day | date: "dd/MM/yyyy" }}
+                  </td>
+                  <td class="whitespace-nowrap font-mono">
+                    {{ item.total_hours }}
+                  </td>
+                  <td>
+                    <div
+                      class="badge badge-soft badge-xs font-mono font-bold uppercase"
+                      [class.badge-success]="item.is_valid"
+                      [class.badge-warning]="!item.is_valid"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 fill-current"
-                        viewBox="0 0 24 24"
+                      {{ item.is_valid ? "No issues" : "Check time logs" }}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="flex justify-end">
+                      <button
+                        type="button"
+                        class="btn btn-xs btn-ghost text-error hover:bg-error hover:text-error-content"
+                        [attr.aria-label]="deleteLabel(item.day)"
+                        (click)="deleteRow(item.day)"
                       >
-                        <path d="M0 0h24v24H0z" fill="none" />
-                        <path
-                          d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </th>
-              </tr>
+                        <shared-icon name="delete" class="size-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
             }
+          </tbody>
+        </table>
+      </div>
+      <!-- #endregion -->
+
+      <!-- #region List, phones only -->
+      <ul class="list sm:hidden">
+        @if (dailyWorksResource.isLoading()) {
+          @for (row of loadingRows(); track row) {
+            <li class="list-row items-center">
+              <div class="skeleton h-6 w-20"></div>
+              <div class="list-col-grow">
+                <div class="skeleton h-4 w-28"></div>
+              </div>
+              <div class="skeleton h-8 w-8"></div>
+            </li>
           }
-        </tbody>
-      </table>
-    </div>
+        } @else {
+          @for (item of dailyWorksResource.value(); track item.day) {
+            <li class="list-row items-center">
+              <div>
+                <div class="font-medium">
+                  {{ item.day | date: "dd/MM/yyyy" }}
+                </div>
+                <div class="font-mono text-lg font-semibold">
+                  {{ item.total_hours }}
+                </div>
+              </div>
+
+              <div class="list-col-grow min-w-0">
+                <div
+                  class="badge badge-soft badge-xs font-mono font-bold uppercase"
+                  [class.badge-success]="item.is_valid"
+                  [class.badge-warning]="!item.is_valid"
+                >
+                  {{ item.is_valid ? "No issues" : "Check time logs" }}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="btn btn-sm btn-ghost btn-square text-error"
+                [attr.aria-label]="deleteLabel(item.day)"
+                (click)="deleteRow(item.day)"
+              >
+                <shared-icon name="delete" class="size-4" />
+              </button>
+            </li>
+          }
+        }
+      </ul>
+      <!-- #endregion -->
+    }
 
     @if (totalRowsResource.value() != null) {
       <shared-pager
         [totalRows]="totalRowsResource.value()!"
         [pageSize]="currentPageSize()"
         [(currentPage)]="currentPage"
-        class="mt-4"
+        class="mt-2"
       />
     }
   </div>

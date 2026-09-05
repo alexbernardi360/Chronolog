@@ -1,5 +1,5 @@
 import { DIALOG_DATA, DialogModule, DialogRef } from '@angular/cdk/dialog';
-import { Component, Inject, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 export interface CustomDialogData {
   title: string;

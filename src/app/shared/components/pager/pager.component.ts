@@ -1,9 +1,9 @@
 import { Component, computed, input, model } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'shared-pager',
-  imports: [FormsModule],
+  imports: [IconComponent],
   templateUrl: './pager.component.html',
   styles: [],
 })
