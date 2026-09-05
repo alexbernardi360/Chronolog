@@ -37,6 +37,9 @@ jobs:
           };
           EOF
 
+      - name: Run Unit Tests
+        run: npx ng test --no-watch
+
       - name: Build Angular App
         run: npm run build
 
