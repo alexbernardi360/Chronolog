@@ -1,14 +1,21 @@
-import { Dialog, DialogModule } from '@angular/cdk/dialog';
+import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog';
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { EntryTypeBadgeComponent } from '../../../shared/components/entry-type-badge/entry-type-badge.component';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { PagerComponent } from '../../../shared/components/pager/pager.component';
-import { QuickInsertDialogComponent } from '../../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
+import {
+  QUICK_INSERT_DIALOG_TITLE_ID,
+  QuickInsertDialogComponent,
+} from '../../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
+import {
+  TIME_LOG_DIALOG_TITLE_ID,
+  TimeLogDialogComponent,
+} from '../../../shared/dialogs/time-log-dialog/time-log-dialog.component';
 import { pageRowSlots } from '../../../shared/domain/pagination.utils';
+import { TimeLog } from '../../../shared/domain/time-log.interface';
 import { CustomDialogService } from '../../../shared/services/custom-dialog.service';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
 import { ToastService } from '../../../shared/services/toast.service';
@@ -22,7 +29,6 @@ const SKELETON_NOTE_WIDTHS = [72, 45, 88, 30, 61, 52, 79, 38, 66, 55];
 @Component({
   imports: [
     DatePipe,
-    RouterLink,
     DialogModule,
     PagerComponent,
     EntryTypeBadgeComponent,
@@ -139,8 +145,28 @@ export class TimeLogsGridComponent {
   }
 
   openQuickInsertDialog() {
-    const dialogRef = this.dialog.open<boolean>(QuickInsertDialogComponent);
+    this.reloadWhenSaved(
+      this.dialog.open<boolean>(QuickInsertDialogComponent, {
+        ariaLabelledBy: QUICK_INSERT_DIALOG_TITLE_ID,
+      }),
+    );
+  }
 
+  /** Without a row it adds a new log; with one it edits that row. */
+  openTimeLogDialog(timeLog?: TimeLog) {
+    this.reloadWhenSaved(
+      this.dialog.open<boolean>(TimeLogDialogComponent, {
+        data: timeLog ? { timeLog } : null,
+        ariaLabelledBy: TIME_LOG_DIALOG_TITLE_ID,
+      }),
+    );
+  }
+
+  /**
+   * Refreshes the page in place once a dialog reports a save. Anything else it
+   * closes with — cancelled, dismissed — leaves the grid alone.
+   */
+  private reloadWhenSaved(dialogRef: DialogRef<boolean>) {
     dialogRef.closed.pipe(filter((result) => result === true)).subscribe(() => {
       this.totalRowsResource.reload();
       this.timeLogsResource.reload();

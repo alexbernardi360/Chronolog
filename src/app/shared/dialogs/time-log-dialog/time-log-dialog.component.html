@@ -1,0 +1,91 @@
+<dialog class="modal modal-bottom sm:modal-middle modal-open">
+  <div class="modal-box">
+    <h3 [id]="titleId" class="text-lg font-bold">
+      {{ isNew ? "Add New" : "Edit" }} Time Log
+    </h3>
+    <p class="text-sm opacity-60">
+      {{
+        isNew
+          ? "Writes a single punch, at the moment you choose."
+          : "Changes the punch and keeps it where it is in the list."
+      }}
+    </p>
+
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" novalidate>
+      <div class="pt-4">
+        <!-- #region Timestamp -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Timestamp</legend>
+          <input
+            type="datetime-local"
+            formControlName="timestamp"
+            class="input w-full"
+            [class.input-error]="timestampInvalid"
+            [attr.aria-invalid]="timestampInvalid ? 'true' : null"
+            [attr.aria-describedby]="
+              timestampInvalid ? 'timestamp-error' : null
+            "
+          />
+          @if (timestampInvalid) {
+            <p id="timestamp-error" class="label text-error">
+              Timestamp is required.
+            </p>
+          }
+        </fieldset>
+        <!-- #endregion -->
+
+        <!-- #region Type -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Type</legend>
+          <select
+            formControlName="type"
+            class="select w-full"
+            [class.select-error]="typeInvalid"
+            [attr.aria-invalid]="typeInvalid ? 'true' : null"
+            [attr.aria-describedby]="typeInvalid ? 'type-error' : null"
+          >
+            <option [ngValue]="null" disabled>Select the type</option>
+            <option [ngValue]="'entry'">Entry</option>
+            <option [ngValue]="'exit'">Exit</option>
+          </select>
+          @if (typeInvalid) {
+            <p id="type-error" class="label text-error">Type is required.</p>
+          }
+        </fieldset>
+        <!-- #endregion -->
+
+        <!-- #region Note -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Note</legend>
+          <textarea
+            formControlName="note"
+            class="textarea w-full"
+            rows="2"
+            placeholder="Insert notes (optional)"
+          ></textarea>
+        </fieldset>
+        <!-- #endregion -->
+      </div>
+
+      <!-- #region Buttons -->
+      <div class="modal-action">
+        <button
+          type="button"
+          class="btn btn-ghost"
+          [disabled]="submitting()"
+          (click)="cancel()"
+        >
+          Cancel
+        </button>
+
+        <button type="submit" class="btn btn-primary" [disabled]="submitting()">
+          @if (submitting()) {
+            <span class="loading loading-spinner" aria-hidden="true"></span>
+          }
+          Save
+        </button>
+      </div>
+      <!-- #endregion -->
+    </form>
+  </div>
+</dialog>

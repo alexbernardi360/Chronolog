@@ -22,30 +22,13 @@ export const routes: Routes = [
           import('./routes/home/home.component').then((m) => m.HomeComponent),
       },
       {
+        // Adding and editing happen in a dialog over the grid, so this feature
+        // is a single route.
         path: 'time-logs',
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./routes/time-logs/time-logs-grid/time-logs-grid.component').then(
-                (m) => m.TimeLogsGridComponent,
-              ),
-          },
-          {
-            path: 'new',
-            loadComponent: () =>
-              import('./routes/time-logs/time-logs-form/time-logs-form.component').then(
-                (m) => m.TimeLogsFormComponent,
-              ),
-          },
-          {
-            path: 'edit/:id',
-            loadComponent: () =>
-              import('./routes/time-logs/time-logs-form/time-logs-form.component').then(
-                (m) => m.TimeLogsFormComponent,
-              ),
-          },
-        ],
+        loadComponent: () =>
+          import('./routes/time-logs/time-logs-grid/time-logs-grid.component').then(
+            (m) => m.TimeLogsGridComponent,
+          ),
       },
       {
         path: 'daily-works',

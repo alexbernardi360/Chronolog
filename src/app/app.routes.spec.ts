@@ -45,14 +45,11 @@ describe('app routes', () => {
     ]);
   });
 
-  it('offers list, create and edit for time logs', () => {
+  it('keeps time logs on a single route, since its form is a dialog', () => {
     const timeLogs = find(children(''), 'time-logs');
 
-    expect(timeLogs.children!.map((r) => r.path)).toEqual([
-      '',
-      'new',
-      'edit/:id',
-    ]);
+    expect(timeLogs.children).toBeUndefined();
+    expect(timeLogs.loadComponent).toBeDefined();
   });
 
   it('sends anything unknown to the 404 page', () => {

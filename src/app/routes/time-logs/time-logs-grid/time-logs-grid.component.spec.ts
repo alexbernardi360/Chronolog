@@ -3,7 +3,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Subject, of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { QuickInsertDialogComponent } from '../../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
+import {
+  QUICK_INSERT_DIALOG_TITLE_ID,
+  QuickInsertDialogComponent,
+} from '../../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
+import {
+  TIME_LOG_DIALOG_TITLE_ID,
+  TimeLogDialogComponent,
+} from '../../../shared/dialogs/time-log-dialog/time-log-dialog.component';
 import { TimeLog } from '../../../shared/domain/time-log.interface';
 import { CustomDialogService } from '../../../shared/services/custom-dialog.service';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
@@ -31,6 +38,13 @@ describe('TimeLogsGridComponent', () => {
   };
   const bodyRows = () => host().querySelectorAll('tbody tr');
   const listRows = () => host().querySelectorAll('ul.list > li');
+  /** Row actions are icon-only, so their accessible name is the way in. */
+  const rowAction = (row: Element, action: 'Edit' | 'Delete') =>
+    row.querySelector(`button[aria-label^="${action}"]`) as HTMLButtonElement;
+  const buttonNamed = (text: string) =>
+    Array.from(host().querySelectorAll('button')).find(
+      (b) => b.textContent!.trim() === text,
+    ) as HTMLButtonElement;
   const toastMessages = () =>
     TestBed.inject(ToastService)
       .toasts()
@@ -234,8 +248,7 @@ describe('TimeLogsGridComponent', () => {
       show.mockResolvedValue(false);
       await render();
 
-      const button = bodyRows()[0].querySelector('button') as HTMLButtonElement;
-      button.click();
+      rowAction(bodyRows()[0], 'Delete').click();
       await settle();
 
       expect(show).toHaveBeenCalled();
@@ -248,7 +261,9 @@ describe('TimeLogsGridComponent', () => {
 
       grid.openQuickInsertDialog();
 
-      expect(open).toHaveBeenCalledWith(QuickInsertDialogComponent);
+      expect(open).toHaveBeenCalledWith(QuickInsertDialogComponent, {
+        ariaLabelledBy: QUICK_INSERT_DIALOG_TITLE_ID,
+      });
     });
 
     it('refreshes after a successful quick insert', async () => {
@@ -271,6 +286,86 @@ describe('TimeLogsGridComponent', () => {
 
       grid.openQuickInsertDialog();
       closed.next(false);
+      await settle();
+
+      expect(getTimeLogs).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('openTimeLogDialog', () => {
+    const openedWith = () => open.mock.calls[0][1] as { data: unknown };
+
+    it('opens an empty dialog for a new log', async () => {
+      await render();
+
+      grid.openTimeLogDialog();
+
+      expect(open).toHaveBeenCalledWith(
+        TimeLogDialogComponent,
+        expect.objectContaining({ data: null }),
+      );
+    });
+
+    it('hands the row over when editing, so the dialog need not refetch it', async () => {
+      await render();
+
+      grid.openTimeLogDialog(ROWS[0]);
+
+      expect(openedWith().data).toEqual({ timeLog: ROWS[0] });
+    });
+
+    it('is wired to Add New', async () => {
+      await render();
+
+      buttonNamed('Add New').click();
+
+      expect(open).toHaveBeenCalledWith(
+        TimeLogDialogComponent,
+        expect.objectContaining({ data: null }),
+      );
+    });
+
+    it('is wired to Add New in the empty state', async () => {
+      getTimeLogs.mockReturnValue(of([]));
+      await render();
+
+      buttonNamed('Add New').click();
+
+      expect(open).toHaveBeenCalledWith(
+        TimeLogDialogComponent,
+        expect.objectContaining({ data: null }),
+      );
+    });
+
+    it('is wired to the row edit button', async () => {
+      await render();
+
+      rowAction(bodyRows()[0], 'Edit').click();
+
+      expect(openedWith().data).toEqual({ timeLog: ROWS[0] });
+    });
+
+    it('refreshes after a save, staying on the current page', async () => {
+      const closed = new Subject<boolean>();
+      open.mockReturnValue({ closed });
+      await render();
+
+      grid.openTimeLogDialog(ROWS[0]);
+      closed.next(true);
+      await settle();
+
+      expect(getTimeLogsCount).toHaveBeenCalledTimes(2);
+      expect(getTimeLogs).toHaveBeenCalledTimes(2);
+      expect(grid.currentPage()).toBe(1);
+    });
+
+    it('does not refresh when the dialog is dismissed', async () => {
+      const closed = new Subject<boolean | undefined>();
+      open.mockReturnValue({ closed });
+      await render();
+
+      grid.openTimeLogDialog(ROWS[0]);
+      closed.next(undefined);
       await settle();
 
       expect(getTimeLogs).toHaveBeenCalledTimes(1);
@@ -345,11 +440,22 @@ describe('TimeLogsGridComponent', () => {
       await render();
       const row = bodyRows()[0];
 
-      expect(row.querySelector('a')!.getAttribute('aria-label')).toBe(
+      expect(rowAction(row, 'Edit').getAttribute('aria-label')).toBe(
         'Edit the log of 01/05/2024 08:30',
       );
-      expect(row.querySelector('button')!.getAttribute('aria-label')).toBe(
+      expect(rowAction(row, 'Delete').getAttribute('aria-label')).toBe(
         'Delete the log of 01/05/2024 08:30',
+      );
+    });
+
+    it('names the edit dialog it opens', async () => {
+      await render();
+
+      grid.openTimeLogDialog(ROWS[0]);
+
+      expect(open).toHaveBeenCalledWith(
+        TimeLogDialogComponent,
+        expect.objectContaining({ ariaLabelledBy: TIME_LOG_DIALOG_TITLE_ID }),
       );
     });
 

@@ -4,12 +4,25 @@ import { Subject, of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { toLocalDateOnlyString } from '../../domain/date-time.utils';
 import { TimeLog } from '../../domain/time-log.interface';
+import { CustomDialogService } from '../../services/custom-dialog.service';
 import { TimeLogsService } from '../../services/time-logs.service';
-import { QuickInsertDialogComponent } from './quick-insert-dialog.component';
+import {
+  QUICK_INSERT_DIALOG_TITLE_ID,
+  QuickInsertDialogComponent,
+} from './quick-insert-dialog.component';
 
 describe('QuickInsertDialogComponent', () => {
   const close = vi.fn();
   const createNewTimeLogs = vi.fn();
+  const show = vi.fn();
+  let backdropClick: Subject<MouseEvent>;
+  let keydownEvents: Subject<KeyboardEvent>;
+  let dialogRef: {
+    close: typeof close;
+    disableClose: boolean;
+    backdropClick: Subject<MouseEvent>;
+    keydownEvents: Subject<KeyboardEvent>;
+  };
   let fixture: ComponentFixture<QuickInsertDialogComponent>;
   let dialog: QuickInsertDialogComponent;
 
@@ -18,13 +31,18 @@ describe('QuickInsertDialogComponent', () => {
   beforeEach(() => {
     close.mockReset();
     createNewTimeLogs.mockReset().mockReturnValue(of(undefined));
+    show.mockReset().mockResolvedValue(true);
     vi.spyOn(console, 'error').mockImplementation(() => {});
+    backdropClick = new Subject<MouseEvent>();
+    keydownEvents = new Subject<KeyboardEvent>();
+    dialogRef = { close, disableClose: false, backdropClick, keydownEvents };
 
     TestBed.configureTestingModule({
       imports: [QuickInsertDialogComponent],
       providers: [
-        { provide: DialogRef, useValue: { close } },
+        { provide: DialogRef, useValue: dialogRef },
         { provide: TimeLogsService, useValue: { createNewTimeLogs } },
+        { provide: CustomDialogService, useValue: { show } },
       ],
     });
     fixture = TestBed.createComponent(QuickInsertDialogComponent);
@@ -144,5 +162,45 @@ describe('QuickInsertDialogComponent', () => {
 
     expect(close).toHaveBeenCalledWith(false);
     expect(createNewTimeLogs).not.toHaveBeenCalled();
+  });
+
+  describe('discarding', () => {
+    /** Types into a field the way a user would, so the control turns dirty. */
+    const type = (value: string) => {
+      const field = (fixture.nativeElement as HTMLElement).querySelector(
+        'textarea',
+      )!;
+      field.value = value;
+      field.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+    };
+
+    it('takes closing over from the CDK', () => {
+      expect(dialogRef.disableClose).toBe(true);
+    });
+
+    it('asks before dropping typed changes', async () => {
+      type('Trasferta');
+
+      backdropClick.next(new MouseEvent('click'));
+      await fixture.whenStable();
+
+      expect(show).toHaveBeenCalledTimes(1);
+      expect(close).toHaveBeenCalledWith();
+    });
+
+    it('closes on Escape when nothing was typed', async () => {
+      keydownEvents.next(new KeyboardEvent('keydown', { key: 'Escape' }));
+      await fixture.whenStable();
+
+      expect(show).not.toHaveBeenCalled();
+      expect(close).toHaveBeenCalledWith();
+    });
+  });
+
+  it('names itself for screen readers with the id its opener points at', () => {
+    const heading = (fixture.nativeElement as HTMLElement).querySelector('h3')!;
+
+    expect(heading.id).toBe(QUICK_INSERT_DIALOG_TITLE_ID);
   });
 });

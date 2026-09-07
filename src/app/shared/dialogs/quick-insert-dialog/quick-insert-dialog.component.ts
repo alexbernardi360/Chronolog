@@ -16,6 +16,10 @@ import {
 import { EntryType, TimeLog } from '../../domain/time-log.interface';
 import { TimeLogsService } from '../../services/time-logs.service';
 import { ToastService } from '../../services/toast.service';
+import { confirmDiscardOnClose } from '../discard-guard';
+
+/** The id the opener has to point `ariaLabelledBy` at. */
+export const QUICK_INSERT_DIALOG_TITLE_ID = 'quick-insert-title';
 
 type TimeSlotControl = 'time1' | 'time2' | 'time3' | 'time4';
 
@@ -36,6 +40,8 @@ export class QuickInsertDialogComponent {
   );
   private readonly timeLogsService = inject(TimeLogsService);
   private readonly toasts = inject(ToastService);
+
+  protected readonly titleId = QUICK_INSERT_DIALOG_TITLE_ID;
 
   readonly submitting = signal(false);
 
@@ -65,6 +71,13 @@ export class QuickInsertDialogComponent {
     ]),
     note: new FormControl<string | null>(null),
   });
+
+  constructor() {
+    confirmDiscardOnClose({
+      isDirty: () => this.formGroup.dirty,
+      isSubmitting: () => this.submitting(),
+    });
+  }
 
   get date() {
     return this.formGroup.controls.date;

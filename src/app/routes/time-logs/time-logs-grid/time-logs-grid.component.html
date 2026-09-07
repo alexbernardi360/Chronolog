@@ -13,10 +13,14 @@
           Quick Insert
         </button>
 
-        <a class="btn btn-sm btn-primary" routerLink="./new">
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          (click)="openTimeLogDialog()"
+        >
           <shared-icon name="plus" class="size-4" />
           Add New
-        </a>
+        </button>
       </div>
     </div>
     <!-- #endregion -->
@@ -33,7 +37,13 @@
           </p>
         </div>
 
-        <a class="btn btn-sm btn-primary" routerLink="./new">Add New</a>
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          (click)="openTimeLogDialog()"
+        >
+          Add New
+        </button>
       </div>
       <!-- #endregion -->
     } @else {
@@ -97,13 +107,14 @@
                   </td>
                   <td>
                     <div class="flex justify-end gap-1">
-                      <a
+                      <button
+                        type="button"
                         class="btn btn-xs btn-ghost text-primary hover:bg-primary hover:text-primary-content"
-                        [routerLink]="['./edit', item.id]"
                         [attr.aria-label]="editLabel(item.timestamp)"
+                        (click)="openTimeLogDialog(item)"
                       >
                         <shared-icon name="edit" class="size-4" />
-                      </a>
+                      </button>
 
                       <button
                         type="button"
@@ -176,13 +187,14 @@
               </div>
 
               <div class="flex gap-1">
-                <a
+                <button
+                  type="button"
                   class="btn btn-sm btn-ghost btn-square text-primary"
-                  [routerLink]="['./edit', item.id]"
                   [attr.aria-label]="editLabel(item.timestamp)"
+                  (click)="openTimeLogDialog(item)"
                 >
                   <shared-icon name="edit" class="size-4" />
-                </a>
+                </button>
 
                 <button
                   type="button"
