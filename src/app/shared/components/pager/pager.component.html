@@ -1,49 +1,62 @@
 @if (isVisible()) {
-  <nav aria-label="Pagination" class="flex justify-center">
-    <div class="join">
-      <button
-        type="button"
-        class="btn btn-sm join-item"
-        aria-label="Previous page"
-        [disabled]="isPreviousDisabled()"
-        (click)="previousPage()"
-      >
-        <shared-icon name="chevron-left" class="size-5" />
-      </button>
+  <nav aria-label="Pagination" class="flex items-center justify-center gap-1">
+    <button
+      type="button"
+      class="btn btn-sm btn-square btn-ghost not-disabled:text-primary"
+      aria-label="Previous page"
+      [disabled]="isPreviousDisabled()"
+      (click)="previousPage()"
+    >
+      <shared-icon name="chevron-left" class="size-5" />
+    </button>
 
-      <!-- Phones get a position readout in place of the numbered pages. -->
-      <span class="btn btn-sm join-item pointer-events-none sm:hidden">
-        {{ currentPage() }} / {{ totalPages() }}
+    <!-- Phones get a position readout in place of the numbered pages. -->
+    <p class="px-2 text-sm font-medium tabular-nums sm:hidden">
+      <span class="inline-block text-right" [style.min-width]="readoutWidth()">
+        {{ currentPage() }}
       </span>
+      / {{ totalPages() }}
+    </p>
 
+    <ol class="hidden items-center gap-1 sm:flex">
       @for (page of pages(); track page.key) {
-        @if (page.value === null) {
-          <span class="btn btn-sm join-item btn-disabled hidden sm:inline-flex">
-            ...
-          </span>
-        } @else {
-          <button
-            type="button"
-            class="btn btn-sm join-item hidden sm:inline-flex"
-            [class.btn-active]="page.value === currentPage()"
-            [attr.aria-current]="page.value === currentPage() ? 'page' : null"
-            [attr.aria-label]="'Page ' + page.value"
-            (click)="changePage(page.value)"
-          >
-            {{ page.value }}
-          </button>
-        }
+        <li>
+          @if (page.value === null) {
+            <!-- Inert marker for the skipped pages: not a control, so it gets
+                 no button chrome and stays out of the accessibility tree. It
+                 keeps the cell width so the row cannot change size. -->
+            <span
+              aria-hidden="true"
+              class="text-base-content/60 inline-flex justify-center px-2 text-xs"
+              [style.min-width]="cellWidth()"
+              >...</span
+            >
+          } @else {
+            <button
+              type="button"
+              class="btn btn-sm px-2 tabular-nums"
+              [style.min-width]="cellWidth()"
+              [class.btn-primary]="page.value === currentPage()"
+              [class.btn-ghost]="page.value !== currentPage()"
+              [attr.aria-current]="page.value === currentPage() ? 'page' : null"
+              [attr.aria-label]="'Page ' + page.value"
+              (click)="changePage(page.value)"
+            >
+              {{ page.value }}
+            </button>
+          }
+        </li>
       }
+    </ol>
 
-      <button
-        type="button"
-        class="btn btn-sm join-item"
-        aria-label="Next page"
-        [disabled]="isNextDisabled()"
-        (click)="nextPage()"
-      >
-        <shared-icon name="chevron-right" class="size-5" />
-      </button>
-    </div>
+    <button
+      type="button"
+      class="btn btn-sm btn-square btn-ghost not-disabled:text-primary"
+      aria-label="Next page"
+      [disabled]="isNextDisabled()"
+      (click)="nextPage()"
+    >
+      <shared-icon name="chevron-right" class="size-5" />
+    </button>
   </nav>
 }

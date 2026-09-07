@@ -22,7 +22,7 @@ describe('PagerComponent', () => {
   const pageCells = () =>
     Array.from(
       host().querySelectorAll<HTMLElement>(
-        '.join > button[aria-label^="Page "], .join > span.btn-disabled',
+        'ol > li > button[aria-label^="Page "], ol > li > span',
       ),
     );
 
@@ -92,6 +92,39 @@ describe('PagerComponent', () => {
       expect(pageValues()).toEqual([1, null, 4, 5, 6, null, 10]);
     });
 
+    it('gives every page cell the same width so the row cannot resize', () => {
+      setup(100, 10, 5);
+      const widths = new Set(pageCells().map((c) => c.style.minWidth));
+
+      expect(widths.size).toBe(1);
+    });
+
+    it('keeps the cell count constant while paging, so the arrows stay put', () => {
+      setup(100, 10, 1);
+      const counts = new Set<number>();
+
+      for (let page = 1; page <= 10; page++) {
+        pager.changePage(page);
+        fixture.detectChanges();
+        counts.add(pageCells().length);
+      }
+
+      expect(counts).toEqual(new Set([7]));
+    });
+
+    it('holds a minimum cell width when the page numbers are short', () => {
+      setup(50, 10, 1);
+
+      expect(pager.cellWidth()).toBe('2.25rem');
+    });
+
+    it('reserves room for the widest page number', () => {
+      setup(2000, 10, 1);
+
+      expect(pager.cellWidth()).toBe('2.75rem');
+      expect(pager.readoutWidth()).toBe('1.5rem');
+    });
+
     it('gives every entry a distinct key so the loop can track duplicates', () => {
       setup(100, 10, 5);
       const keys = pager.pages().map((p) => p.key);
@@ -119,11 +152,35 @@ describe('PagerComponent', () => {
     it('marks the current page as active', () => {
       setup(50, 10, 3);
       const active = pageButtons().filter((b) =>
-        b.classList.contains('btn-active'),
+        b.classList.contains('btn-primary'),
       );
 
       expect(active).toHaveLength(1);
       expect(active[0].textContent!.trim()).toBe('3');
+    });
+
+    it('leaves every other page in the quiet ghost treatment', () => {
+      setup(50, 10, 3);
+      const quiet = pageButtons().filter((b) =>
+        b.classList.contains('btn-ghost'),
+      );
+
+      expect(quiet.map((b) => b.textContent!.trim())).toEqual([
+        '1',
+        '2',
+        '4',
+        '5',
+      ]);
+    });
+
+    it('keeps the ellipsis out of the accessibility tree', () => {
+      setup(100, 10, 5);
+      const ellipses = pageCells().filter((c) => c.tagName === 'SPAN');
+
+      expect(ellipses.map((e) => e.getAttribute('aria-hidden'))).toEqual([
+        'true',
+        'true',
+      ]);
     });
 
     it('exposes the current page to assistive technology', () => {
@@ -172,7 +229,7 @@ describe('PagerComponent', () => {
     it('shows a position readout that replaces the numbers on phones', () => {
       setup(100, 10, 3);
 
-      const readout = host().querySelector('.join > span[class*="hidden"]')!;
+      const readout = host().querySelector('nav > p')!;
       expect(readout.textContent!.replace(/\s+/g, ' ').trim()).toBe('3 / 10');
     });
   });
