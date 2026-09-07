@@ -91,6 +91,21 @@
                   </td>
                 </tr>
               }
+
+              <!-- Pads a short last page up to a full one so the pager below
+                   keeps its place. `h-6` is the height of the `btn-xs` row
+                   action, which is what makes a real row as tall as it is.
+                   The padding reads as blank space rather than as empty
+                   records: no zebra stripe, and the row rule is only made
+                   transparent — dropping it would cost 1px a row and throw the
+                   alignment off. -->
+              @for (row of fillerRows(); track row) {
+                <tr aria-hidden="true" class="bg-transparent">
+                  <td colspan="4" class="border-transparent">
+                    <div class="h-6"></div>
+                  </td>
+                </tr>
+              }
             }
           </tbody>
         </table>
@@ -139,6 +154,18 @@
               >
                 <shared-icon name="delete" class="size-4" />
               </button>
+            </li>
+          }
+
+          <!-- Same padding for the phone list. It mirrors the day/hours column
+               of a real row rather than hard-coding a height, so it follows
+               along if that column's type scale changes. -->
+          @for (row of fillerRows(); track row) {
+            <li class="list-row items-center after:hidden" aria-hidden="true">
+              <div class="invisible">
+                <div class="font-medium">&nbsp;</div>
+                <div class="font-mono text-lg font-semibold">&nbsp;</div>
+              </div>
             </li>
           }
         }

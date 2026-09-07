@@ -8,6 +8,7 @@ import { EntryTypeBadgeComponent } from '../../../shared/components/entry-type-b
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { PagerComponent } from '../../../shared/components/pager/pager.component';
 import { QuickInsertDialogComponent } from '../../../shared/dialogs/quick-insert-dialog/quick-insert-dialog.component';
+import { pageRowSlots } from '../../../shared/domain/pagination.utils';
 import { CustomDialogService } from '../../../shared/services/custom-dialog.service';
 import { TimeLogsService } from '../../../shared/services/time-logs.service';
 import { ToastService } from '../../../shared/services/toast.service';
@@ -63,21 +64,30 @@ export class TimeLogsGridComponent {
       (this.timeLogsResource.value()?.length ?? 0) === 0,
   );
 
-  readonly loadingRows = computed(() => {
-    const total = this.totalRowsResource.value() ?? 0;
-    const page = this.currentPage();
-    let pageSize = this.currentPageSize();
+  /** Row slots every page occupies, short last page included. */
+  readonly rowSlots = computed(() =>
+    pageRowSlots(this.totalRowsResource.value(), this.currentPageSize()),
+  );
 
-    const totalPages = Math.ceil(total / pageSize);
-
-    if (page === totalPages) {
-      pageSize = total % pageSize || pageSize;
-    }
-
-    return Array.from({ length: pageSize }, (_x, i) => ({
+  readonly loadingRows = computed(() =>
+    Array.from({ length: this.rowSlots() }, (_x, i) => ({
       key: i,
       noteWidth: SKELETON_NOTE_WIDTHS[i % SKELETON_NOTE_WIDTHS.length],
-    }));
+    })),
+  );
+
+  /**
+   * Blank rows padding a short last page up to a full one, so the pager below
+   * the table stays where it was on every other page. Clamped at zero in case a
+   * page comes back longer than the count promised.
+   */
+  readonly fillerRows = computed(() => {
+    const loaded = this.timeLogsResource.value()?.length ?? 0;
+
+    return Array.from(
+      { length: Math.max(0, this.rowSlots() - loaded) },
+      (_x, i) => i,
+    );
   });
 
   /** Row actions are icon-only, so each needs a name that says which row. */

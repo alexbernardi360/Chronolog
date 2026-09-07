@@ -121,13 +121,15 @@ describe('TimeLogsGridComponent', () => {
       expect(grid.loadingRows()).toHaveLength(10);
     });
 
-    it('draws only the remaining skeletons on a partial last page', async () => {
+    it('keeps a full page of skeletons on a partial last page', async () => {
       getTimeLogsCount.mockReturnValue(of(25));
       await render();
 
       grid.currentPage.set(3);
 
-      expect(grid.loadingRows()).toHaveLength(5);
+      // The short page is padded back up to a full one, so the skeletons have
+      // to fill the same slots or loading would shift the layout.
+      expect(grid.loadingRows()).toHaveLength(10);
     });
 
     it('draws a full page when the last page is exactly full', async () => {
@@ -145,6 +147,38 @@ describe('TimeLogsGridComponent', () => {
       await render();
 
       expect(grid.loadingRows()).toHaveLength(10);
+    });
+  });
+
+  describe('fillerRows', () => {
+    it('pads a short last page up to a full one', async () => {
+      // 25 rows over pages of 10, and the service hands back the two stubs.
+      getTimeLogsCount.mockReturnValue(of(25));
+      await render();
+
+      expect(grid.fillerRows()).toHaveLength(10 - ROWS.length);
+    });
+
+    it('leaves a single-page list unpadded', async () => {
+      // The default count is ROWS.length, so it all fits on one page: there is
+      // nowhere to page to, so the card may be as short as its content.
+      await render();
+
+      expect(grid.fillerRows()).toHaveLength(0);
+    });
+
+    it('renders the padding as inert rows hidden from assistive technology', async () => {
+      getTimeLogsCount.mockReturnValue(of(25));
+      await render();
+      const fillers = Array.from(bodyRows()).filter(
+        (r) => r.getAttribute('aria-hidden') === 'true',
+      );
+
+      expect(bodyRows()).toHaveLength(10);
+      expect(fillers).toHaveLength(10 - ROWS.length);
+      expect(fillers.every((r) => r.querySelector('a, button') === null)).toBe(
+        true,
+      );
     });
   });
 
