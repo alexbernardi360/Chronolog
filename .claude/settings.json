@@ -1,5 +1,26 @@
 {
   "enabledPlugins": {
     "supabase@claude-plugins-official": true
+  },
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Edit(./.env)",
+      "Read(./src/environments/environment.ts)",
+      "Edit(./src/environments/environment.ts)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/post-edit.mjs"
+          }
+        ]
+      }
+    ]
   }
 }

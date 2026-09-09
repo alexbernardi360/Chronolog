@@ -3,11 +3,7 @@
     "angular-cli": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "@angular/cli",
-        "mcp"
-      ],
+      "args": ["-y", "@angular/cli", "mcp"],
       "env": {}
     },
     "supabase": {
@@ -21,6 +17,12 @@
     "daisyui": {
       "type": "http",
       "url": "https://gitmcp.io/saadeghi/daisyui"
+    },
+    "firebase": {
+      "type": "stdio",
+      "command": "firebase",
+      "args": ["experimental:mcp"],
+      "env": {}
     }
   }
 }
